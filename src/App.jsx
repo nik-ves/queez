@@ -1,31 +1,25 @@
 import { useState } from "react";
-import "./App.css";
 
+import GlobalStyles from "./styles/GlobalStyles";
+import Question from "./question/Question";
+import Answer from "./answer/Answer";
 import supabase from "./services/supabase";
 
 function App() {
-  const [question, setQuestion] = useState({});
+  const [question, setQuestion] = useState();
   const [answers, setAnswers] = useState([]);
   const [questionDetails, setQuestionDetails] = useState([]);
 
   async function test() {
-    // const { data, error } = await supabase.from("question").select(`
-    //   id,
-    //   text,
-    //   answer ( id, text, isCorrect )
-    // `);
-
-    // let { data, error } = await supabase.from("question_details").select("*");
-
     const { data, error } = await supabase
       .from("question")
       .select(
         `
-    id, 
-    type, 
-    answer ( id, text, isCorrect ),
-    question_details ( id, header, text )
-    `
+        id, 
+        type, 
+        answer ( id, text, result ),
+        question_details ( id, header, text )
+        `
       )
       .eq("quiz_id", "1");
 
@@ -34,31 +28,39 @@ function App() {
     setQuestionDetails(data[0].question_details);
   }
 
-  console.log(questionDetails);
+  console.log(answers);
 
   return (
     <>
-      <p>Nikola</p>
+      <GlobalStyles />
 
-      <button
-        onClick={() => {
-          test();
-        }}
-      >
-        Test
-      </button>
-      {questionDetails.map((detail) => {
-        const text = detail.text;
+      {!question && (
+        <button
+          onClick={() => {
+            test();
+          }}
+        >
+          Start
+        </button>
+      )}
 
-        return (
-          <div key={detail.id}>
-            {detail.id !== "" ? <h1>{detail.header}</h1> : ""}
-            {text.map((line, idx) => {
-              return <p key={idx}>{line}</p>;
-            })}
-          </div>
-        );
+      {questionDetails.map((details, idx) => {
+        return <Question key={idx} details={details} type={question.type} />;
       })}
+
+      {answers.map((answerObject, idx) => {
+        return <Answer key={idx} answer={answerObject} />;
+      })}
+
+      {question && (
+        <button
+          onClick={() => {
+            test();
+          }}
+        >
+          Next
+        </button>
+      )}
     </>
   );
 }
