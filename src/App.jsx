@@ -1,49 +1,35 @@
 import { useState } from "react";
 
 import GlobalStyles from "./styles/GlobalStyles";
-import Question from "./question/Question";
-import Answer from "./answer/Answer";
+import QuestionBox from "./question/QuestionBox";
+import AnswerBox from "./answer/AnswerBox";
 import supabase from "./services/supabase";
 
 function App() {
   const [question, setQuestion] = useState();
-  const [answers, setAnswers] = useState([]);
-  const [questionDetails, setQuestionDetails] = useState([]);
-  const [testInput, setTestInput] = useState("");
+  const [answers, setAnswers] = useState();
+  const [questionDetails, setQuestionDetails] = useState();
 
   async function test() {
     const { data, error } = await supabase
-      .from("question")
+      .from("get_random_question")
       .select(
         `
         id, 
-        type, 
-        text,
-        answer ( id, text, result ),
+        answerType, 
+        answer ( * ),
         question_details ( id, header, text )
         `
       )
-      .eq("quiz_id", "1");
+      .eq("quiz_id", "1")
+      // .eq("id", "10")
+      .limit(1)
+      .single();
 
-    setQuestion(data[0]);
-    setAnswers(data[0].answer);
-    setQuestionDetails(data[0].question_details);
+    setQuestion(data);
+    setQuestionDetails(data?.question_details);
+    setAnswers(data?.answer);
   }
-
-  // console.log(question);
-
-  let str = question?.text;
-  const regex = /\\n|\\r\\n|\\n\\r|\\r/g;
-  let jaja = str?.replace(regex, "<br>");
-  console.log(jaja);
-
-  // const testara = testInput?.replace(/\n\r/g, "\r\n\r\n");
-
-  // const testara = str?.replace(/\n\r/g, "\r\n\r\n");
-  // console.log(testara);
-
-  // var lines = testInput?.split("\r\n\r\n");
-  // console.log(lines);
 
   return (
     <>
@@ -59,13 +45,9 @@ function App() {
         </button>
       )}
 
-      {questionDetails.map((details, idx) => {
-        return <Question key={idx} details={details} type={question.type} />;
-      })}
+      <QuestionBox details={questionDetails} type={question?.answerType} />
 
-      {answers.map((answerObject, idx) => {
-        return <Answer key={idx} answer={answerObject} />;
-      })}
+      <AnswerBox answers={answers} type={question?.answerType} />
 
       {question && (
         <button
@@ -76,12 +58,6 @@ function App() {
           Next
         </button>
       )}
-
-      <code>{question?.text}</code>
-
-      {/* <textarea
-        onChange={(event) => setTestInput(event.target.value)}
-      ></textarea> */}
     </>
   );
 }
