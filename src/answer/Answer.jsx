@@ -1,7 +1,15 @@
 import styled from "styled-components";
 
 export default function Answer({ answer }) {
-  return <AnswerBox>{answer.text}</AnswerBox>;
+  function validateAnswer() {
+    if (answer.result === "true") {
+      console.log("Tacan odgovor!");
+    } else {
+      console.log("Pogresan odgovor");
+    }
+  }
+
+  return <AnswerBox onClick={validateAnswer}>{answer.text}</AnswerBox>;
 }
 
 const AnswerBox = styled.p`

@@ -9,6 +9,7 @@ function App() {
   const [question, setQuestion] = useState();
   const [answers, setAnswers] = useState([]);
   const [questionDetails, setQuestionDetails] = useState([]);
+  const [testInput, setTestInput] = useState("");
 
   async function test() {
     const { data, error } = await supabase
@@ -17,6 +18,7 @@ function App() {
         `
         id, 
         type, 
+        text,
         answer ( id, text, result ),
         question_details ( id, header, text )
         `
@@ -28,7 +30,19 @@ function App() {
     setQuestionDetails(data[0].question_details);
   }
 
-  console.log(answers);
+  // console.log(question);
+
+  let str = question?.text;
+  // const testara = str?.replace("\r\n\r\n", "\r\n\r\n");
+  // console.log(str);
+
+  // console.log(lines);
+
+  const testara = testInput?.replace(/\n\r/g, "\r\n\r\n");
+  console.log(testara);
+
+  // var lines = testInput?.split("\r\n\r\n");
+  // console.log(lines);
 
   return (
     <>
@@ -61,6 +75,10 @@ function App() {
           Next
         </button>
       )}
+
+      <textarea
+        onChange={(event) => setTestInput(event.target.value)}
+      ></textarea>
     </>
   );
 }
