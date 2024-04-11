@@ -25,7 +25,7 @@ function App() {
         `
       )
       .eq("quiz_id", "1")
-      // .eq("id", "12")
+      .eq("id", "11")
       .limit(1)
       .single();
 

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 
+import { shuffleArray } from "../utils/helpers";
+
 export default function AnswerSingle({ answers }) {
   const [correctAnswer, setCorrectAnswer] = useState(null);
   const [shuffledArray, setShuffledArray] = useState([]);
@@ -16,16 +18,8 @@ export default function AnswerSingle({ answers }) {
   }
 
   useEffect(() => {
-    function shuffleArray(array) {
-      let shuffled = array
-        .map((value) => ({ value, sort: Math.random() }))
-        .sort((a, b) => a.sort - b.sort)
-        .map(({ value }) => value);
-
-      setShuffledArray(shuffled);
-    }
-
-    shuffleArray(answers);
+    const shuffled = shuffleArray(answers);
+    setShuffledArray(shuffled);
 
     return () => {
       setCorrectAnswer(null);

@@ -1,59 +1,88 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 
+import { shuffleArray } from "../utils/helpers";
+
 export default function AnswerDragDrop({ answers, correctAnswers }) {
-  console.log(answers);
+  const [shuffledArray, setShuffledArray] = useState([]);
 
-  const [widgets, setWidgets] = useState([]);
-
-  function handleOnDrag(event, widgetType) {
-    event.dataTransfer.setData("widgetType", widgetType);
+  function handleOnDrag(event, answer) {
+    event.dataTransfer?.setData("answer", JSON.stringify(answer));
   }
 
-  function handleOnDrop(event) {
-    const widgetType = event.dataTransfer.getData("widgetType");
-    setWidgets([...widgets, widgetType]);
-  }
-
-  function handleDragOver(event) {
-    event.preventDefault();
-  }
+  useEffect(() => {
+    const shuffled = shuffleArray(answers);
+    setShuffledArray(shuffled);
+  }, [answers]);
 
   return (
     <AnswerBody>
       <Answers>
-        {answers.map((answer, idx) => (
+        {shuffledArray.map((answer, idx) => (
           <AnswerLine
             key={idx}
             draggable
-            onDragStart={(event) => handleOnDrag(event, answer.text)}
+            onDragStart={(event) => handleOnDrag(event, answer)}
           >
             {answer.text}
           </AnswerLine>
         ))}
       </Answers>
 
-      <DropBody
-        className="page"
-        onDrop={handleOnDrop}
-        onDragOver={handleDragOver}
-      >
-        {/* {widgets.map((widget, idx) => (
-          <AnswerLine key={idx}>{widget}</AnswerLine>
-        ))} */}
-
-        {/* {correctAnswers?.map((answer, idx) => {
-          return <AnswerLine key={idx}>{answer}</AnswerLine>;
-        })} */}
+      <DropBody>
+        {correctAnswers > 0 &&
+          [...Array(correctAnswers)].map((x, i) => (
+            <DropLine key={i} index={i} />
+          ))}
       </DropBody>
     </AnswerBody>
+  );
+}
+
+function DropLine({ index }) {
+  const [answer, setAnswer] = useState();
+
+  function handleOnDrop(event) {
+    const answer = JSON.parse(event.dataTransfer?.getData("answer"));
+    setAnswer(answer);
+  }
+
+  function handleDragOver(event) {
+    event.preventDefault();
+  }
+
+  function getStyles() {
+    if (answer) {
+      if (answer?.correctPlace === index) {
+        return { backgroundColor: "green" };
+      } else {
+        return { backgroundColor: "red" };
+      }
+    } else {
+      return {};
+    }
+  }
+
+  useEffect(() => {
+    return () => {
+      setAnswer(null);
+    };
+  }, []);
+
+  return (
+    <AnswerLine
+      style={getStyles()}
+      onDrop={handleOnDrop}
+      onDragOver={handleDragOver}
+    >
+      {answer ? answer.text : <>&nbsp;</>}
+    </AnswerLine>
   );
 }
 
 const AnswerLine = styled.button`
   border: 1px solid white;
   width: 100%;
-  padding: 0 15px;
   padding: 10px;
   font-size: 15px;
   transition: all 0.2s;
@@ -76,6 +105,14 @@ const AnswerLine = styled.button`
     scale: 1.03;
   }
 
+  &.correct {
+    background-color: green;
+  }
+
+  &.wrong {
+    background-color: red;
+  }
+
   &:active,
   &:visited,
   &:focus {
@@ -94,7 +131,7 @@ const Answers = styled.div`
 
 const DropBody = styled.div`
   width: 45%;
-  background-color: green;
+  /* background-color: green; */
 `;
 
 // export default function AnswerDragDrop({ answers, correctAnswers }) {

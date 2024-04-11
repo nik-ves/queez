@@ -27,7 +27,7 @@ export default function AnswerDropdown({ answers }) {
 }
 
 function DropdownMenu({ options, correctOption }) {
-  const [selectedAnswer, setSelectedAnswer] = useState(0);
+  const [selectedAnswer, setSelectedAnswer] = useState("");
   const [selectStyles, setSelectStyles] = useState({
     "& .MuiSelect-select": {
       color: "black",
@@ -74,7 +74,7 @@ function DropdownMenu({ options, correctOption }) {
         defaultValue=""
       >
         <MenuItem value="">&nbsp;</MenuItem>
-        {options.map((option, idx) => {
+        {options?.map((option, idx) => {
           return (
             <MenuItem key={idx} value={option}>
               {option}
