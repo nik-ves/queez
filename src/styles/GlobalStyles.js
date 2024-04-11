@@ -75,6 +75,10 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+code {
+  white-space: pre-wrap;
+}
 `;
 
 export default GlobalStyles;

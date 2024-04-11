@@ -33,13 +33,14 @@ function App() {
   // console.log(question);
 
   let str = question?.text;
-  // const testara = str?.replace("\r\n\r\n", "\r\n\r\n");
-  // console.log(str);
+  const regex = /\\n|\\r\\n|\\n\\r|\\r/g;
+  let jaja = str?.replace(regex, "<br>");
+  console.log(jaja);
 
-  // console.log(lines);
+  // const testara = testInput?.replace(/\n\r/g, "\r\n\r\n");
 
-  const testara = testInput?.replace(/\n\r/g, "\r\n\r\n");
-  console.log(testara);
+  // const testara = str?.replace(/\n\r/g, "\r\n\r\n");
+  // console.log(testara);
 
   // var lines = testInput?.split("\r\n\r\n");
   // console.log(lines);
@@ -76,9 +77,11 @@ function App() {
         </button>
       )}
 
-      <textarea
+      <code>{question?.text}</code>
+
+      {/* <textarea
         onChange={(event) => setTestInput(event.target.value)}
-      ></textarea>
+      ></textarea> */}
     </>
   );
 }
