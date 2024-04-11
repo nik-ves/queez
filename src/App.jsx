@@ -1,38 +1,49 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import GlobalStyles from "./styles/GlobalStyles";
 import QuestionBox from "./question/QuestionBox";
 import AnswerBox from "./answer/AnswerBox";
-import supabase from "./services/supabase";
+
+import { getAllQuestionsId, getQuestonById } from "./services/apiQuestions";
 
 function App() {
   const [question, setQuestion] = useState();
   const [answers, setAnswers] = useState();
   const [questionDetails, setQuestionDetails] = useState();
+  const [questionsId, setQuestionsId] = useState([]);
   const correctAnswers = questionDetails
     ? questionDetails[0]?.correctAnswers
     : 0;
 
-  async function test() {
-    const { data, error } = await supabase
-      .from("get_random_question")
-      .select(
-        `
-        id, 
-        answerType, 
-        answer ( * ),
-        question_details ( id, header, text, correctAnswers )
-        `
-      )
-      .eq("quiz_id", "1")
-      .eq("id", "11")
-      .limit(1)
-      .single();
+  async function getQuestion() {
+    let randomElement =
+      questionsId[Math.floor(Math.random() * questionsId.length)];
 
-    setQuestion(data);
-    setQuestionDetails(data?.question_details);
-    setAnswers(data?.answer);
+    if (randomElement) {
+      const { data, error } = await getQuestonById(randomElement.id);
+
+      setQuestion(data);
+      setQuestionDetails(data?.question_details);
+      setAnswers(data?.answer);
+    } else {
+      setQuestion(null);
+      setQuestionDetails(null);
+      setAnswers(null);
+    }
+
+    setQuestionsId((prevState) => {
+      return prevState.filter((id) => id !== randomElement);
+    });
   }
+
+  useEffect(function () {
+    async function getIds() {
+      const data = await getAllQuestionsId();
+      setQuestionsId(data);
+    }
+
+    getIds();
+  }, []);
 
   return (
     <>
@@ -41,7 +52,7 @@ function App() {
       {!question && (
         <button
           onClick={() => {
-            test();
+            getQuestion();
           }}
         >
           Start
@@ -59,7 +70,7 @@ function App() {
       {question && (
         <button
           onClick={() => {
-            test();
+            getQuestion();
           }}
         >
           Next
