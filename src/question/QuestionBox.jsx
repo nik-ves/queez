@@ -6,6 +6,8 @@ function setHeader(type) {
       return "(Single answer)";
     case "multiple":
       return "(Multiple answers)";
+    case "dropdown":
+      return "(Select from the dropdown menu)";
   }
 }
 
@@ -32,6 +34,6 @@ const QuestionBody = styled.section`
 
   & p {
     white-space: pre-line;
-    font-size: 18px;
+    font-size: 20px;
   }
 `;

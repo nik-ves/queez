@@ -2,6 +2,7 @@ import styled from "styled-components";
 
 import AnswerSingle from "./AnswerSingle";
 import AnswerMultiple from "./AnswerMultiple";
+import AnswerDropdown from "./AnswerDropdown";
 
 export default function AnswerBox({ answers, type }) {
   if (type === "single") {
@@ -14,6 +15,12 @@ export default function AnswerBox({ answers, type }) {
     return (
       <AnswerBody>
         <AnswerMultiple answers={answers} />
+      </AnswerBody>
+    );
+  } else if (type === "dropdown") {
+    return (
+      <AnswerBody>
+        <AnswerDropdown answers={answers} />
       </AnswerBody>
     );
   } else {
