@@ -9,6 +9,9 @@ function App() {
   const [question, setQuestion] = useState();
   const [answers, setAnswers] = useState();
   const [questionDetails, setQuestionDetails] = useState();
+  const correctAnswers = questionDetails
+    ? questionDetails[0]?.correctAnswers
+    : 0;
 
   async function test() {
     const { data, error } = await supabase
@@ -18,11 +21,11 @@ function App() {
         id, 
         answerType, 
         answer ( * ),
-        question_details ( id, header, text )
+        question_details ( id, header, text, correctAnswers )
         `
       )
       .eq("quiz_id", "1")
-      // .eq("id", "11")
+      // .eq("id", "12")
       .limit(1)
       .single();
 
@@ -47,7 +50,11 @@ function App() {
 
       <QuestionBox details={questionDetails} type={question?.answerType} />
 
-      <AnswerBox answers={answers} type={question?.answerType} />
+      <AnswerBox
+        answers={answers}
+        type={question?.answerType}
+        correctAnswers={correctAnswers}
+      />
 
       {question && (
         <button

@@ -4,10 +4,15 @@ function setHeader(type) {
   switch (type) {
     case "single":
       return "(Single answer)";
+
     case "multiple":
       return "(Multiple answers)";
+
     case "dropdown":
       return "(Select from the dropdown menu)";
+
+    case "dragdrop":
+      return "(Drag and Drop)";
   }
 }
 
