@@ -49,19 +49,58 @@ export default function AnswerMultiple({ answers }) {
     <>
       {shuffledArray?.map((answer, idx) => {
         return (
-          <AnswerLine
-            style={getStyles(answer.isCorrect)}
-            onClick={() => handleAnswers(answer.id)}
-            key={idx}
-            className={answerExists(answer.id) ? "active" : "undefined"}
-          >
-            {answer.text}
-          </AnswerLine>
+          <>
+            {answer.type === "text" ? (
+              <>
+                <AnswerLine
+                  style={getStyles(answer.isCorrect)}
+                  onClick={() => handleAnswers(answer.id)}
+                  key={idx}
+                  className={answerExists(answer.id) ? "active" : "undefined"}
+                >
+                  {answer.text}
+                </AnswerLine>
+              </>
+            ) : (
+              <>
+                <CodeBox
+                  style={getStyles(answer.isCorrect)}
+                  onClick={() => handleAnswers(answer.id)}
+                  key={idx}
+                  className={answerExists(answer.id) ? "active" : "undefined"}
+                >
+                  <code>{answer.text}</code>
+                </CodeBox>
+              </>
+            )}
+          </>
         );
       })}
     </>
   );
 }
+
+const CodeBox = styled.div`
+  margin-bottom: 10px;
+  padding: 20px;
+
+  border: 1px solid white;
+  width: 100%;
+
+  font-size: 15px;
+  transition: all 0.2s;
+  font-weight: inherit;
+
+  &:hover {
+    cursor: pointer;
+    border-color: #646cff;
+  }
+
+  &.active {
+    border-color: #646cff;
+    scale: 1.03;
+  }
+`;
 
 const AnswerLine = styled.button`
   border: 1px solid white;

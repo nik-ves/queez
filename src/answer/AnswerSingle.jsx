@@ -30,18 +30,56 @@ export default function AnswerSingle({ answers }) {
     <>
       {shuffledArray?.map((answer, idx) => {
         return (
-          <AnswerLine
-            style={getStyles(answer.isCorrect)}
-            onClick={() => setCorrectAnswer(answer.isCorrect)}
-            key={idx}
-          >
-            {answer.text}
-          </AnswerLine>
+          <>
+            {answer.type === "text" ? (
+              <>
+                <AnswerLine
+                  style={getStyles(answer.isCorrect)}
+                  onClick={() => setCorrectAnswer(answer.isCorrect)}
+                  key={idx}
+                >
+                  {answer.text}
+                </AnswerLine>
+              </>
+            ) : (
+              <>
+                <CodeBox
+                  style={getStyles(answer.isCorrect)}
+                  onClick={() => setCorrectAnswer(answer.isCorrect)}
+                  key={idx}
+                >
+                  <code>{answer.text}</code>
+                </CodeBox>
+              </>
+            )}
+          </>
         );
       })}
     </>
   );
 }
+
+const CodeBox = styled.div`
+  margin-bottom: 10px;
+  padding: 20px;
+
+  border: 1px solid white;
+  width: 100%;
+
+  font-size: 15px;
+  transition: all 0.2s;
+  font-weight: inherit;
+
+  &:hover {
+    cursor: pointer;
+    border-color: #646cff;
+  }
+
+  &.active {
+    border-color: #646cff;
+    scale: 1.03;
+  }
+`;
 
 const AnswerLine = styled.button`
   border: 1px solid white;
