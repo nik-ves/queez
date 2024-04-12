@@ -16,20 +16,14 @@ function setHeader(type) {
   }
 }
 
-export default function QuestionBox({ details, type }) {
+export default function QuestionBox({ question }) {
   return (
     <QuestionBody>
-      {type && <h2>{setHeader(type)}</h2>}
+      {question?.answerType && <h2>{setHeader(question?.answerType)}</h2>}
 
-      {details?.map((detail, idx) => {
-        return (
-          <div key={idx}>
-            {detail.header && <h3>{details.header}</h3>}
+      <p>{question?.text}</p>
 
-            <p>{detail.text}</p>
-          </div>
-        );
-      })}
+      {question?.image && <img src={question?.image} alt="questionImage" />}
     </QuestionBody>
   );
 }

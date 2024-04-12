@@ -2,16 +2,17 @@ import supabase from "./supabase";
 
 export async function getQuestonById(id) {
   const { data, error } = await supabase
-    .from("get_random_question")
+    .from("question")
     .select(
       `
-        id, 
-        answerType, 
-        answer ( * ),
-        question_details ( id, header, text, correctAnswers )
+        answerType,
+        numOfCorrectAnswers,
+        text,
+        image,
+        answer ( * )
         `
     )
-    .eq("quiz_id", "1")
+    .eq("quizId", "1")
     .eq("id", id)
     .limit(1)
     .single();
@@ -27,5 +28,5 @@ export async function getAllQuestionsId() {
     .from("get_all_questions_id")
     .select(`*`);
 
-  return data;
+  return { data, error };
 }

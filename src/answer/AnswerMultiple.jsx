@@ -9,16 +9,18 @@ export default function AnswerMultiple({ answers }) {
   let correctArray = answers.filter((answer) => answer.isCorrect === true);
 
   function handleAnswers(id) {
+    if (selectedAnswers?.length === correctArray?.length) return;
+
     setSelectedAnswers((answers) => {
       if (answers.find((d) => d === id)) {
-        return [...answers];
+        return answers.filter((d) => d !== id);
       }
 
       return [...answers, id];
     });
   }
 
-  function check(id) {
+  function answerExists(id) {
     if (selectedAnswers.length > 0) {
       return selectedAnswers.find((answerId) => answerId === id);
     }
@@ -51,7 +53,7 @@ export default function AnswerMultiple({ answers }) {
             style={getStyles(answer.isCorrect)}
             onClick={() => handleAnswers(answer.id)}
             key={idx}
-            className={check(answer.id) ? "active" : "undefined"}
+            className={answerExists(answer.id) ? "active" : "undefined"}
           >
             {answer.text}
           </AnswerLine>

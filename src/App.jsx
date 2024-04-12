@@ -9,11 +9,8 @@ import { getAllQuestionsId, getQuestonById } from "./services/apiQuestions";
 function App() {
   const [question, setQuestion] = useState();
   const [answers, setAnswers] = useState();
-  const [questionDetails, setQuestionDetails] = useState();
-  const [questionsId, setQuestionsId] = useState([]);
-  const correctAnswers = questionDetails
-    ? questionDetails[0]?.correctAnswers
-    : 0;
+  const [questionsId, setQuestionsId] = useState();
+  const correctAnswers = question ? question?.numOfCorrectAnswers : 0;
 
   async function getQuestion() {
     let randomElement =
@@ -21,13 +18,10 @@ function App() {
 
     if (randomElement) {
       const { data, error } = await getQuestonById(randomElement.id);
-
       setQuestion(data);
-      setQuestionDetails(data?.question_details);
       setAnswers(data?.answer);
     } else {
       setQuestion(null);
-      setQuestionDetails(null);
       setAnswers(null);
     }
 
@@ -38,7 +32,7 @@ function App() {
 
   useEffect(function () {
     async function getIds() {
-      const data = await getAllQuestionsId();
+      const { data } = await getAllQuestionsId();
       setQuestionsId(data);
     }
 
@@ -59,7 +53,7 @@ function App() {
         </button>
       )}
 
-      <QuestionBox details={questionDetails} type={question?.answerType} />
+      <QuestionBox question={question} />
 
       <AnswerBox
         answers={answers}

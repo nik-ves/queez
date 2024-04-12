@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 
 import MenuItem from "@mui/material/MenuItem";
@@ -27,7 +27,7 @@ export default function AnswerDropdown({ answers }) {
 }
 
 function DropdownMenu({ options, correctOption }) {
-  const [selectedAnswer, setSelectedAnswer] = useState("");
+  const [selectedAnswer, setSelectedAnswer] = useState("none");
   const [selectStyles, setSelectStyles] = useState({
     "& .MuiSelect-select": {
       color: "black",
@@ -47,41 +47,58 @@ function DropdownMenu({ options, correctOption }) {
           },
         });
       } else {
-        setSelectStyles({
-          "& .MuiSelect-select": {
-            color: "black",
-            backgroundColor: "red",
-          },
-        });
+        if (event.target.value === "none") {
+          setSelectStyles({
+            "& .MuiSelect-select": {
+              color: "black",
+              backgroundColor: "white",
+            },
+          });
+        } else {
+          setSelectStyles({
+            "& .MuiSelect-select": {
+              color: "black",
+              backgroundColor: "red",
+            },
+          });
+        }
       }
-    } else {
+    }
+  }
+
+  useEffect(() => {
+    return () => {
       setSelectStyles({
         "& .MuiSelect-select": {
           color: "black",
           backgroundColor: "white",
         },
       });
-    }
-  }
+
+      setSelectedAnswer("none");
+    };
+  }, [options]);
 
   return (
     <FormControl sx={{ m: 1, minWidth: 300 }} size="small">
-      <Select
-        sx={selectStyles}
-        value={selectedAnswer}
-        onChange={handleSelect}
-        displayEmpty
-        defaultValue=""
-      >
-        <MenuItem value="">&nbsp;</MenuItem>
-        {options?.map((option, idx) => {
-          return (
-            <MenuItem key={idx} value={option}>
-              {option}
-            </MenuItem>
-          );
-        })}
-      </Select>
+      {
+        <Select
+          sx={selectStyles}
+          value={selectedAnswer}
+          onChange={handleSelect}
+          displayEmpty
+          defaultValue="none"
+        >
+          <MenuItem value="none">&nbsp;</MenuItem>
+          {options?.map((option, idx) => {
+            return (
+              <MenuItem key={idx} value={option}>
+                {option}
+              </MenuItem>
+            );
+          })}
+        </Select>
+      }
     </FormControl>
   );
 }
@@ -92,4 +109,9 @@ const AnswerLine = styled.div`
   padding: 10px;
   margin-bottom: 15px;
   border: 1px solid white;
+  align-items: center;
+
+  & p {
+    width: 45%;
+  }
 `;

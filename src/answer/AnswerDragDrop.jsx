@@ -32,14 +32,14 @@ export default function AnswerDragDrop({ answers, correctAnswers }) {
       <DropBody>
         {correctAnswers > 0 &&
           [...Array(correctAnswers)].map((x, i) => (
-            <DropLine key={i} index={i} />
+            <DropLine answers={answers} key={i} index={i} />
           ))}
       </DropBody>
     </AnswerBody>
   );
 }
 
-function DropLine({ index }) {
+function DropLine({ index, answers }) {
   const [answer, setAnswer] = useState();
 
   function handleOnDrop(event) {
@@ -53,7 +53,7 @@ function DropLine({ index }) {
 
   function getStyles() {
     if (answer) {
-      if (answer?.correctPlace === index) {
+      if (answer?.correctArrayPlace === index) {
         return { backgroundColor: "green" };
       } else {
         return { backgroundColor: "red" };
@@ -67,7 +67,7 @@ function DropLine({ index }) {
     return () => {
       setAnswer(null);
     };
-  }, []);
+  }, [answers]);
 
   return (
     <AnswerLine
@@ -131,59 +131,4 @@ const Answers = styled.div`
 
 const DropBody = styled.div`
   width: 45%;
-  /* background-color: green; */
 `;
-
-// export default function AnswerDragDrop({ answers, correctAnswers }) {
-//   // console.log(answers);
-//   console.log(correctAnswers);
-//   const [widgets, setWidgets] = useState([]);
-
-//   function handleOnDrag(event, widgetType) {
-//     event.dataTransfer.setData("widgetType", widgetType);
-//   }
-
-//   function handleOnDrop(event) {
-//     const widgetType = event.dataTransfer.getData("widgetType");
-//     setWidgets([...widgets, widgetType]);
-//   }
-
-//   function handleDragOver(event) {
-//     event.preventDefault();
-//   }
-
-//   return (
-//     <div>
-//       <div>
-//         <div
-//           className="widget"
-//           draggable
-//           onDragStart={(event) => handleOnDrag(event, "Pitanje 1")}
-//         >
-//           Pitanje 1
-//         </div>
-
-//         <div
-//           className="widget"
-//           draggable
-//           onDragStart={(event) => handleOnDrag(event, "Pitanje 2")}
-//         >
-//           Pitanje 2
-//         </div>
-
-//         <div
-//           className="widget"
-//           draggable
-//           onDragStart={(event) => handleOnDrag(event, "Pitanje 3")}
-//         >
-//           Pitanje 3
-//         </div>
-//       </div>
-//       <div className="page" onDrop={handleOnDrop} onDragOver={handleDragOver}>
-//         {widgets.map((widget, idx) => (
-//           <div key={idx}>{widget}</div>
-//         ))}
-//       </div>
-//     </div>
-//   );
-// }
