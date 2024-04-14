@@ -10,6 +10,8 @@ function App() {
   const [question, setQuestion] = useState();
   const [answers, setAnswers] = useState();
   const [questionsId, setQuestionsId] = useState();
+  const [isLoading, setIsLoading] = useState(false);
+  const [questionNumber, setQuestionNumber] = useState(0);
   const correctAnswers = question ? question?.numOfCorrectAnswers : 0;
 
   async function getQuestion() {
@@ -17,12 +19,23 @@ function App() {
       questionsId[Math.floor(Math.random() * questionsId.length)];
 
     if (randomElement) {
-      const { data, error } = await getQuestonById(randomElement.id);
-      setQuestion(data);
-      setAnswers(data?.answer);
+      try {
+        setIsLoading(true);
+
+        const { data, error } = await getQuestonById(randomElement.id);
+        setQuestion(data);
+        setAnswers(data?.answer);
+        setQuestionNumber((oldValue) => oldValue + 1);
+      } catch (error) {
+        setIsLoading(false);
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+      }
     } else {
       setQuestion(null);
       setAnswers(null);
+      setQuestionNumber(0);
     }
 
     setQuestionsId((prevState) => {
@@ -53,21 +66,26 @@ function App() {
         </button>
       )}
 
-      <QuestionBox question={question} />
+      {question && (
+        <QuestionBox question={question} questionNumber={questionNumber} />
+      )}
 
-      <AnswerBox
-        answers={answers}
-        type={question?.answerType}
-        correctAnswers={correctAnswers}
-      />
+      {answers && (
+        <AnswerBox
+          answers={answers}
+          type={question?.answerType}
+          correctAnswers={correctAnswers}
+        />
+      )}
 
       {question && (
         <button
+          disabled={isLoading}
           onClick={() => {
             getQuestion();
           }}
         >
-          Next
+          {isLoading ? "Loading..." : "Next"}
         </button>
       )}
     </>

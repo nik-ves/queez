@@ -11,16 +11,29 @@ export default function AnswerDropdown({ answers }) {
       {answers.map((answer, idx) => {
         const options = answer.options;
 
-        return (
-          <AnswerLine key={idx}>
-            <p>{answer.text}</p>
+        if (answer.type === "text") {
+          return (
+            <AnswerLine key={idx}>
+              <p>{answer.text}</p>
 
-            <DropdownMenu
-              options={options}
-              correctOption={answer.correctOption}
-            />
-          </AnswerLine>
-        );
+              <DropdownMenu
+                options={options}
+                correctOption={answer.correctOption}
+              />
+            </AnswerLine>
+          );
+        } else {
+          return (
+            <CodeBox key={idx}>
+              <code>{answer.text}</code>
+
+              <DropdownMenu
+                options={options}
+                correctOption={answer.correctOption}
+              />
+            </CodeBox>
+          );
+        }
       })}
     </>
   );
@@ -80,28 +93,49 @@ function DropdownMenu({ options, correctOption }) {
   }, [options]);
 
   return (
-    <FormControl sx={{ m: 1, minWidth: 300 }} size="small">
-      {
-        <Select
-          sx={selectStyles}
-          value={selectedAnswer}
-          onChange={handleSelect}
-          displayEmpty
-          defaultValue="none"
-        >
-          <MenuItem value="none">&nbsp;</MenuItem>
-          {options?.map((option, idx) => {
-            return (
-              <MenuItem key={idx} value={option}>
-                {option}
-              </MenuItem>
-            );
-          })}
-        </Select>
-      }
+    <FormControl sx={{ m: 1, width: 300 }} size="small">
+      <Select
+        sx={selectStyles}
+        value={selectedAnswer}
+        onChange={handleSelect}
+        displayEmpty
+        defaultValue="none"
+      >
+        <MenuItem value="none">&nbsp;</MenuItem>
+        {options?.map((option, idx) => {
+          return (
+            <MenuItem key={idx} value={option}>
+              {option}
+            </MenuItem>
+          );
+        })}
+      </Select>
     </FormControl>
   );
 }
+
+const CodeBox = styled.div`
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid white;
+
+  font-size: 15px;
+  transition: all 0.2s;
+  font-weight: inherit;
+
+  display: flex;
+  justify-content: space-between;
+
+  &:hover {
+    cursor: pointer;
+    border-color: #646cff;
+  }
+
+  &.active {
+    border-color: #646cff;
+    scale: 1.03;
+  }
+`;
 
 const AnswerLine = styled.div`
   display: flex;
@@ -110,8 +144,25 @@ const AnswerLine = styled.div`
   margin-bottom: 15px;
   border: 1px solid white;
   align-items: center;
+  transition: all 0.2s;
 
   & p {
     width: 45%;
+  }
+
+  &:hover {
+    cursor: pointer;
+    border-color: #646cff;
+  }
+
+  &.active {
+    border-color: #646cff;
+    scale: 1.03;
+  }
+
+  &:active,
+  &:visited,
+  &:focus {
+    outline: none;
   }
 `;

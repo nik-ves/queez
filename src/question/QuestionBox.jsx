@@ -16,10 +16,14 @@ function setHeader(type) {
   }
 }
 
-export default function QuestionBox({ question }) {
+export default function QuestionBox({ question, questionNumber }) {
   return (
     <QuestionBody>
-      {question?.answerType && <h2>{setHeader(question?.answerType)}</h2>}
+      {question?.answerType && (
+        <h2>
+          #{questionNumber} {setHeader(question?.answerType)}
+        </h2>
+      )}
 
       <p>{question?.text}</p>
 
@@ -30,9 +34,34 @@ export default function QuestionBox({ question }) {
 
 const QuestionBody = styled.section`
   margin-bottom: 50px;
+  padding: 20px;
+  border: 1px solid white;
+
+  @media only screen and (max-width: 1000px) {
+    margin-bottom: 25px;
+    padding: 10px;
+  }
+
+  h2 {
+    @media only screen and (max-width: 1000px) {
+      font-size: 22px;
+    }
+
+    @media only screen and (max-width: 500px) {
+      font-size: 18px;
+    }
+  }
 
   & p {
     white-space: pre-line;
     font-size: 20px;
+
+    @media only screen and (max-width: 1000px) {
+      font-size: 18px;
+    }
+
+    @media only screen and (max-width: 500px) {
+      font-size: 15px;
+    }
   }
 `;

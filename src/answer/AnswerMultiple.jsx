@@ -48,33 +48,29 @@ export default function AnswerMultiple({ answers }) {
   return (
     <>
       {shuffledArray?.map((answer, idx) => {
-        return (
-          <>
-            {answer.type === "text" ? (
-              <>
-                <AnswerLine
-                  style={getStyles(answer.isCorrect)}
-                  onClick={() => handleAnswers(answer.id)}
-                  key={idx}
-                  className={answerExists(answer.id) ? "active" : "undefined"}
-                >
-                  {answer.text}
-                </AnswerLine>
-              </>
-            ) : (
-              <>
-                <CodeBox
-                  style={getStyles(answer.isCorrect)}
-                  onClick={() => handleAnswers(answer.id)}
-                  key={idx}
-                  className={answerExists(answer.id) ? "active" : "undefined"}
-                >
-                  <code>{answer.text}</code>
-                </CodeBox>
-              </>
-            )}
-          </>
-        );
+        if (answer.type === "text") {
+          return (
+            <AnswerLine
+              key={idx}
+              style={getStyles(answer.isCorrect)}
+              onClick={() => handleAnswers(answer.id)}
+              className={answerExists(answer.id) ? "active" : "undefined"}
+            >
+              {answer.text}
+            </AnswerLine>
+          );
+        } else {
+          return (
+            <CodeBox
+              key={idx}
+              style={getStyles(answer.isCorrect)}
+              onClick={() => handleAnswers(answer.id)}
+              className={answerExists(answer.id) ? "active" : "undefined"}
+            >
+              <code>{answer.text}</code>
+            </CodeBox>
+          );
+        }
       })}
     </>
   );
@@ -83,9 +79,15 @@ export default function AnswerMultiple({ answers }) {
 const CodeBox = styled.div`
   margin-bottom: 10px;
   padding: 20px;
-
   border: 1px solid white;
-  width: 100%;
+
+  @media only screen and (max-width: 1000px) {
+    padding: 10px;
+  }
+
+  @media only screen and (max-width: 500px) {
+    font-size: 13px;
+  }
 
   font-size: 15px;
   transition: all 0.2s;

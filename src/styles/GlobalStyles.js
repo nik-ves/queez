@@ -79,6 +79,17 @@ button:focus-visible {
 code {
   white-space: pre-wrap;
 }
+
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+img {
+  @media only screen and (max-width: 1000px) {
+    width: 100%;
+  }
+}
 `;
 
 export default GlobalStyles;

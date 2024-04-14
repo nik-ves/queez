@@ -29,31 +29,27 @@ export default function AnswerSingle({ answers }) {
   return (
     <>
       {shuffledArray?.map((answer, idx) => {
-        return (
-          <>
-            {answer.type === "text" ? (
-              <>
-                <AnswerLine
-                  style={getStyles(answer.isCorrect)}
-                  onClick={() => setCorrectAnswer(answer.isCorrect)}
-                  key={idx}
-                >
-                  {answer.text}
-                </AnswerLine>
-              </>
-            ) : (
-              <>
-                <CodeBox
-                  style={getStyles(answer.isCorrect)}
-                  onClick={() => setCorrectAnswer(answer.isCorrect)}
-                  key={idx}
-                >
-                  <code>{answer.text}</code>
-                </CodeBox>
-              </>
-            )}
-          </>
-        );
+        if (answer.type === "text") {
+          return (
+            <AnswerLine
+              key={idx}
+              style={getStyles(answer.isCorrect)}
+              onClick={() => setCorrectAnswer(answer.isCorrect)}
+            >
+              {answer.text}
+            </AnswerLine>
+          );
+        } else {
+          return (
+            <CodeBox
+              key={idx}
+              style={getStyles(answer.isCorrect)}
+              onClick={() => setCorrectAnswer(answer.isCorrect)}
+            >
+              <code>{answer.text}</code>
+            </CodeBox>
+          );
+        }
       })}
     </>
   );
@@ -62,9 +58,7 @@ export default function AnswerSingle({ answers }) {
 const CodeBox = styled.div`
   margin-bottom: 10px;
   padding: 20px;
-
   border: 1px solid white;
-  width: 100%;
 
   font-size: 15px;
   transition: all 0.2s;
