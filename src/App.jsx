@@ -1,92 +1,42 @@
 import { useEffect, useState } from "react";
 
 import GlobalStyles from "./styles/GlobalStyles";
-import QuestionBox from "./question/QuestionBox";
-import AnswerBox from "./answer/AnswerBox";
-
-import { getAllQuestionsId, getQuestonById } from "./services/apiQuestions";
+import Quiz from "./quiz/Quiz";
+import QuizBox from "./quiz/QuizBox";
+import { getAllQuizzes } from "./services/apiQuizzes";
 
 function App() {
-  const [question, setQuestion] = useState();
-  const [answers, setAnswers] = useState();
-  const [questionsId, setQuestionsId] = useState();
-  const [isLoading, setIsLoading] = useState(false);
-  const [questionNumber, setQuestionNumber] = useState(0);
-  const correctAnswers = question ? question?.numOfCorrectAnswers : 0;
-
-  async function getQuestion() {
-    let randomElement =
-      questionsId[Math.floor(Math.random() * questionsId.length)];
-
-    if (randomElement) {
-      try {
-        setIsLoading(true);
-
-        const { data, error } = await getQuestonById(randomElement.id);
-        setQuestion(data);
-        setAnswers(data?.answer);
-        setQuestionNumber((oldValue) => oldValue + 1);
-      } catch (error) {
-        setIsLoading(false);
-        console.log(error);
-      } finally {
-        setIsLoading(false);
-      }
-    } else {
-      setQuestion(null);
-      setAnswers(null);
-      setQuestionNumber(0);
-    }
-
-    setQuestionsId((prevState) => {
-      return prevState.filter((id) => id !== randomElement);
-    });
-  }
+  const [activeQuiz, setActiveQuiz] = useState({});
+  const [quizzes, setQuizzes] = useState([]);
 
   useEffect(function () {
-    async function getIds() {
-      const { data } = await getAllQuestionsId();
-      setQuestionsId(data);
+    async function getData() {
+      const { data } = await getAllQuizzes();
+
+      setQuizzes(data);
     }
 
-    getIds();
+    getData();
   }, []);
 
   return (
     <>
       <GlobalStyles />
 
-      {!question && (
-        <button
-          onClick={() => {
-            getQuestion();
-          }}
-        >
-          Start
-        </button>
+      {!activeQuiz.quizId && (
+        <>
+          {quizzes.map((quiz, idx) => {
+            return (
+              <QuizBox onQuizStart={setActiveQuiz} key={idx} quiz={quiz} />
+            );
+          })}
+        </>
       )}
 
-      {question && (
-        <QuestionBox question={question} questionNumber={questionNumber} />
-      )}
-
-      {answers && (
-        <AnswerBox
-          answers={answers}
-          type={question?.answerType}
-          correctAnswers={correctAnswers}
-        />
-      )}
-
-      {question && (
-        <button
-          disabled={isLoading}
-          onClick={() => {
-            getQuestion();
-          }}
-        >
-          {isLoading ? "Loading..." : "Next"}
-        </button>
+      {activeQuiz.quizId ? (
+        <Quiz activeQuiz={activeQuiz} onQuizEnd={setActiveQuiz} />
+      ) : (
+        ""
       )}
     </>
   );

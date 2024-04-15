@@ -1,6 +1,6 @@
 import supabase from "./supabase";
 
-export async function getQuestonById(id) {
+export async function getQuestion(quizId, questionId) {
   const { data, error } = await supabase
     .from("question")
     .select(
@@ -12,8 +12,8 @@ export async function getQuestonById(id) {
         answer ( * )
         `
     )
-    .eq("quizId", "1")
-    .eq("id", id)
+    .eq("quizId", quizId)
+    .eq("id", questionId)
     .limit(1)
     .single();
 
@@ -23,10 +23,11 @@ export async function getQuestonById(id) {
   };
 }
 
-export async function getAllQuestionsId() {
+export async function getAllQuestionsId(quizId) {
   const { data, error } = await supabase
-    .from("get_all_questions_id")
-    .select(`*`);
+    .from("get_all_question_ids")
+    .select(`id, quizId`)
+    .eq("quizId", quizId);
 
   return { data, error };
 }

@@ -19,7 +19,6 @@ const GlobalStyles = createGlobalStyle`
 #root {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
 }
 
 a {
@@ -32,7 +31,6 @@ a:hover {
 }
 
 body {
-  margin: 0;
   display: flex;
   place-items: center;
   min-width: 320px;
