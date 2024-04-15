@@ -15,13 +15,13 @@ export default function Quiz({ activeQuiz, onQuizEnd }) {
     let arrayElement =
       questionIds[Math.floor(Math.random() * questionIds?.length)];
 
-    if (arrayElement.id) {
+    if (arrayElement && arrayElement?.id !== 0) {
       try {
         setIsLoading(true);
 
         const { data, error } = await getQuestion(
           activeQuiz.quizId,
-          arrayElement.id
+          arrayElement?.id
         );
         setQuestion(data);
         setAnswers(data?.answer);
@@ -33,6 +33,7 @@ export default function Quiz({ activeQuiz, onQuizEnd }) {
         setIsLoading(false);
       }
     } else {
+      onQuizEnd({});
       setQuestion(null);
       setAnswers(null);
       setQuestionNumber(0);
