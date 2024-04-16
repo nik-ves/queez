@@ -2,18 +2,19 @@ import { useEffect, useState } from "react";
 import QuestionBox from "../question/QuestionBox";
 import AnswerBox from "../answer/AnswerBox";
 import { getQuestion } from "../services/apiQuestions";
+import { shuffleArray } from "../utils/helpers";
+import styled from "styled-components";
 
 export default function Quiz({ activeQuiz, onQuizEnd }) {
   const [question, setQuestion] = useState();
   const [answers, setAnswers] = useState();
-  const [questionIds, setQuestionIds] = useState(activeQuiz.questionIds);
+  const [questionIds] = useState(shuffleArray(activeQuiz.questionIds));
   const [isLoading, setIsLoading] = useState(false);
   const [questionNumber, setQuestionNumber] = useState(0);
   const correctAnswers = question ? question?.numOfCorrectAnswers : 0;
 
   async function getData() {
-    let arrayElement =
-      questionIds[Math.floor(Math.random() * questionIds?.length)];
+    let arrayElement = questionIds[questionNumber];
 
     if (arrayElement && arrayElement?.id !== 0) {
       try {
@@ -23,9 +24,9 @@ export default function Quiz({ activeQuiz, onQuizEnd }) {
           activeQuiz.quizId,
           arrayElement?.id
         );
+
         setQuestion(data);
         setAnswers(data?.answer);
-        setQuestionNumber((oldValue) => oldValue + 1);
       } catch (error) {
         setIsLoading(false);
         console.log(error);
@@ -36,27 +37,20 @@ export default function Quiz({ activeQuiz, onQuizEnd }) {
       onQuizEnd({});
       setQuestion(null);
       setAnswers(null);
-      setQuestionNumber(0);
     }
-
-    setQuestionIds((prevState) => {
-      return prevState.filter((id) => id !== arrayElement);
-    });
   }
 
-  useEffect(function () {
-    getData();
-
-    return () => {
-      onQuizEnd({});
-      setQuestionNumber(0);
-    };
-  }, []);
+  useEffect(
+    function () {
+      getData();
+    },
+    [questionNumber]
+  );
 
   return (
     <>
       {question && (
-        <QuestionBox question={question} questionNumber={questionNumber} />
+        <QuestionBox question={question} questionNumber={questionNumber + 1} />
       )}
 
       {answers && (
@@ -68,15 +62,31 @@ export default function Quiz({ activeQuiz, onQuizEnd }) {
       )}
 
       {question && (
-        <button
-          disabled={isLoading}
-          onClick={() => {
-            getData();
-          }}
-        >
-          {isLoading ? "Loading..." : "Next"}
-        </button>
+        <Actions>
+          <button
+            disabled={isLoading || questionNumber === 0}
+            onClick={() => {
+              setQuestionNumber((value) => value - 1);
+            }}
+          >
+            {isLoading ? "Loading..." : "Previous"}
+          </button>
+
+          <button
+            disabled={isLoading || questionNumber + 1 === questionIds?.length}
+            onClick={() => {
+              setQuestionNumber((value) => value + 1);
+            }}
+          >
+            {isLoading ? "Loading..." : "Next"}
+          </button>
+        </Actions>
       )}
     </>
   );
 }
+
+const Actions = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
