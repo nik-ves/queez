@@ -80,6 +80,7 @@ const CodeBox = styled.div`
   margin-bottom: 10px;
   padding: 20px;
   border: 1px solid white;
+  color: white;
 
   @media only screen and (max-width: 1000px) {
     padding: 10px;
@@ -112,6 +113,7 @@ const AnswerLine = styled.button`
   font-size: 15px;
   transition: all 0.2s;
   font-weight: inherit;
+  color: white;
 
   background-color: transparent;
   font-weight: inherit;

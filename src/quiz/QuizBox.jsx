@@ -34,5 +34,6 @@ const QuizBody = styled.div`
   & p {
     font-size: 35px;
     margin: 0;
+    color: white;
   }
 `;

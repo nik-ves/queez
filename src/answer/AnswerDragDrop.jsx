@@ -87,6 +87,7 @@ const AnswerLine = styled.button`
   font-size: 15px;
   transition: all 0.2s;
   font-weight: inherit;
+  color: white;
 
   background-color: transparent;
   font-weight: inherit;

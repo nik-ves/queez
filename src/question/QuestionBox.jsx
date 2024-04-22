@@ -43,6 +43,7 @@ const QuestionBody = styled.section`
   }
 
   h2 {
+    color: white;
     @media only screen and (max-width: 1000px) {
       font-size: 22px;
     }
@@ -55,6 +56,7 @@ const QuestionBody = styled.section`
   & p {
     white-space: pre-line;
     font-size: 20px;
+    color: white;
 
     @media only screen and (max-width: 1000px) {
       font-size: 18px;

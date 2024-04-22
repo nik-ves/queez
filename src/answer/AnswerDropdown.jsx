@@ -118,6 +118,7 @@ const CodeBox = styled.div`
   margin-bottom: 10px;
   padding: 10px;
   border: 1px solid white;
+  color: white;
 
   font-size: 15px;
   transition: all 0.2s;
@@ -145,6 +146,7 @@ const AnswerLine = styled.div`
   border: 1px solid white;
   align-items: center;
   transition: all 0.2s;
+  color: white;
 
   & p {
     width: 45%;
