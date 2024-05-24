@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import QuestionBox from "../question/QuestionBox";
 import AnswerBox from "../answer/AnswerBox";
-import { getQuestion } from "../services/apiQuestions";
 import { shuffleArray } from "../utils/helpers";
 import styled from "styled-components";
 
@@ -30,7 +29,14 @@ export default function Quiz({ activeQuiz, onQuizEnd }) {
     getData();
   }, []);
 
-  console.log(question);
+  useEffect(
+    function () {
+      if (quizData && !question) {
+        getQuestion(0);
+      }
+    },
+    [quizData]
+  );
 
   return (
     <>
