@@ -5,51 +5,32 @@ import { getQuestion } from "../services/apiQuestions";
 import { shuffleArray } from "../utils/helpers";
 import styled from "styled-components";
 
+import { useQuiz } from "../context/QuizContext";
+
 export default function Quiz({ activeQuiz, onQuizEnd }) {
   const [question, setQuestion] = useState();
   const [answers, setAnswers] = useState();
-  const [questionIds] = useState(activeQuiz.questionIds);
-  const [isLoading, setIsLoading] = useState(false);
   const [questionNumber, setQuestionNumber] = useState(0);
+  const { quizData, getQuizData } = useQuiz();
 
-  const randomizedQuestions = useMemo(
-    () => shuffleArray(questionIds),
-    [questionIds]
-  );
+  const randomizedQuestions = useMemo(() => shuffleArray(quizData), [quizData]);
 
-  async function getData() {
-    let arrayElement = randomizedQuestions[questionNumber];
+  function getQuestion() {
+    let question = randomizedQuestions[questionNumber];
 
-    if (arrayElement && arrayElement?.id !== 0) {
-      try {
-        setIsLoading(true);
-
-        const { data, error } = await getQuestion(
-          activeQuiz.quizId,
-          arrayElement?.id
-        );
-
-        setQuestion(data);
-        setAnswers(data?.answer);
-      } catch (error) {
-        setIsLoading(false);
-        console.log(error);
-      } finally {
-        setIsLoading(false);
-      }
-    } else {
-      onQuizEnd({});
-      setQuestion(null);
-      setAnswers(null);
-    }
+    setQuestion(question);
+    setAnswers(question?.answer);
   }
 
-  useEffect(
-    function () {
-      getData();
-    },
-    [questionNumber]
-  );
+  useEffect(function () {
+    async function getData() {
+      await getQuizData(activeQuiz);
+    }
+
+    getData();
+  }, []);
+
+  console.log(question);
 
   return (
     <>
@@ -68,21 +49,23 @@ export default function Quiz({ activeQuiz, onQuizEnd }) {
       {question && (
         <Actions>
           <button
-            disabled={isLoading || questionNumber === 0}
+            disabled={questionNumber === 0}
             onClick={() => {
               setQuestionNumber((value) => value - 1);
+              getQuestion();
             }}
           >
-            {isLoading ? "Loading..." : "Previous"}
+            Previous
           </button>
 
           <button
-            disabled={isLoading || questionNumber + 1 === questionIds?.length}
+            disabled={questionNumber + 1 === quizData?.length}
             onClick={() => {
               setQuestionNumber((value) => value + 1);
+              getQuestion();
             }}
           >
-            {isLoading ? "Loading..." : "Next"}
+            Next
           </button>
         </Actions>
       )}

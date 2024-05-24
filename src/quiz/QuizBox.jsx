@@ -3,12 +3,7 @@ import { getAllQuestionsId } from "../services/apiQuestions";
 
 export default function QuizBox({ quiz, onQuizStart }) {
   async function startQuiz() {
-    const { data } = await getAllQuestionsId(quiz.id);
-
-    onQuizStart({
-      quizId: quiz.id,
-      questionIds: data,
-    });
+    onQuizStart(quiz.id);
   }
 
   return (
