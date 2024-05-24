@@ -9,7 +9,8 @@ const GlobalStyles = createGlobalStyle`
 }
 
 #root {
-  max-width: 1200px;
+  width: 1200px;
+  max-width: 100%;
   margin: 0 auto;
 }
 
@@ -25,7 +26,7 @@ a:hover {
 body {
   display: flex;
   place-items: center;
-  min-width: 320px;
+  /* min-width: 320px; */
   min-height: 100vh;
 }
 

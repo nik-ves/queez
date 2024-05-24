@@ -4,8 +4,8 @@ import supabase from "../services/supabase";
 const QuizContext = createContext();
 
 function QuizProvider({ children }) {
-  const [quizzes, setQuizzes] = useState([]);
-  const [questionsAndAnswers, setQuestionsAndAnswers] = useState([]);
+  // const [quizzes, setQuizzes] = useState([]);
+  // const [questionsAndAnswers, setQuestionsAndAnswers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   async function getAllQuizzes() {
@@ -13,7 +13,8 @@ function QuizProvider({ children }) {
       setIsLoading(true);
       const { data, error } = await supabase.from("quiz").select("id, title");
 
-      setQuizzes(data);
+      // setQuizzes(data);
+      return data;
     } catch (error) {
       alert("There was an error loading data");
     } finally {
@@ -37,7 +38,8 @@ function QuizProvider({ children }) {
         )
         .eq("quizId", quizId);
 
-      setQuestionsAndAnswers(data);
+      // setQuestionsAndAnswers(data);
+      return data;
     } catch (error) {
       alert("There was an error loading data");
     } finally {
@@ -46,9 +48,9 @@ function QuizProvider({ children }) {
   }
 
   const exports = {
-    quizzes,
+    // quizzes,
     getAllQuizzes,
-    quizData: questionsAndAnswers,
+    // quizData: questionsAndAnswers,
     getQuizData,
     isLoading,
   };

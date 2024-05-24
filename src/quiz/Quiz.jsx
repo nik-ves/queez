@@ -1,85 +1,53 @@
-import { useEffect, useMemo, useState } from "react";
-import QuestionBox from "../question/QuestionBox";
-import AnswerBox from "../answer/AnswerBox";
-import { shuffleArray } from "../utils/helpers";
-import styled from "styled-components";
+import { useEffect, useState } from "react";
 
 import { useQuiz } from "../context/QuizContext";
+import styled from "styled-components";
 
-export default function Quiz({ activeQuiz, onQuizEnd }) {
-  const [question, setQuestion] = useState();
-  const [answers, setAnswers] = useState();
-  const [questionNumber, setQuestionNumber] = useState(0);
-  const { quizData, getQuizData } = useQuiz();
+export default function Quiz() {
+  const [quizzes, setQuizzes] = useState([]);
 
-  const randomizedQuestions = useMemo(() => shuffleArray(quizData), [quizData]);
+  const { getAllQuizzes } = useQuiz();
 
-  function getQuestion() {
-    let question = randomizedQuestions[questionNumber];
-
-    setQuestion(question);
-    setAnswers(question?.answer);
-  }
-
-  useEffect(function () {
-    async function getData() {
-      await getQuizData(activeQuiz);
+  useEffect(() => {
+    async function getQuizList() {
+      const data = await getAllQuizzes();
+      setQuizzes(data);
     }
 
-    getData();
+    getQuizList();
   }, []);
 
-  useEffect(
-    function () {
-      if (quizData && !question) {
-        getQuestion(0);
-      }
-    },
-    [quizData]
-  );
+  console.log(quizzes);
 
   return (
     <>
-      {question && (
-        <QuestionBox question={question} questionNumber={questionNumber + 1} />
-      )}
-
-      {answers && (
-        <AnswerBox
-          answers={answers}
-          type={question?.answerType}
-          correctAnswers={question?.numOfCorrectAnswers}
-        />
-      )}
-
-      {question && (
-        <Actions>
-          <button
-            disabled={questionNumber === 0}
-            onClick={() => {
-              setQuestionNumber((value) => value - 1);
-              getQuestion();
-            }}
-          >
-            Previous
-          </button>
-
-          <button
-            disabled={questionNumber + 1 === quizData?.length}
-            onClick={() => {
-              setQuestionNumber((value) => value + 1);
-              getQuestion();
-            }}
-          >
-            Next
-          </button>
-        </Actions>
-      )}
+      {quizzes?.map((quiz, i) => (
+        <QuizBody key={i}>
+          <Box>
+            <Title>{quiz.title}</Title>
+          </Box>
+        </QuizBody>
+      ))}
     </>
   );
 }
 
-const Actions = styled.div`
+const QuizBody = styled.section`
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
+  margin: 10px;
+`;
+
+const Box = styled.div`
+  width: 100%;
+  border: 1px solid white;
+  padding: 10px;
+`;
+
+const Title = styled.p`
+  color: white;
+  font-size: 40px;
+  line-height: 1;
+  max-width: 100%;
 `;
