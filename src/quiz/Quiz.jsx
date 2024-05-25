@@ -1,34 +1,30 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { Link } from "react-router-dom";
 
 import { useQuiz } from "../context/QuizContext";
 import styled from "styled-components";
 
 export default function Quiz() {
-  const [quizzes, setQuizzes] = useState([]);
-
-  const { getAllQuizzes } = useQuiz();
+  const { quizzes, getAllQuizzes } = useQuiz();
 
   useEffect(() => {
     async function getQuizList() {
-      const data = await getAllQuizzes();
-      setQuizzes(data);
+      await getAllQuizzes();
     }
 
     getQuizList();
   }, []);
 
-  console.log(quizzes);
-
   return (
-    <>
-      {quizzes?.map((quiz, i) => (
-        <QuizBody key={i}>
-          <Box>
+    <QuizBody>
+      {quizzes?.map((quiz, i) => {
+        return (
+          <StyledLink key={i} to={`quizId/${quiz.id}`}>
             <Title>{quiz.title}</Title>
-          </Box>
-        </QuizBody>
-      ))}
-    </>
+          </StyledLink>
+        );
+      })}
+    </QuizBody>
   );
 }
 
@@ -36,18 +32,19 @@ const QuizBody = styled.section`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 10px;
+  margin: 100px 10px;
 `;
 
-const Box = styled.div`
-  width: 100%;
+const StyledLink = styled(Link)`
+  width: 45%;
   border: 1px solid white;
   padding: 10px;
 `;
 
 const Title = styled.p`
   color: white;
-  font-size: 40px;
+  font-size: 30px;
   line-height: 1;
   max-width: 100%;
+  text-align: center;
 `;

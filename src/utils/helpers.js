@@ -6,3 +6,7 @@ export function shuffleArray(array) {
 
   return shuffled;
 }
+
+export function isObjectEmpty(objectName) {
+  return Object.keys(objectName)?.length === 0;
+}

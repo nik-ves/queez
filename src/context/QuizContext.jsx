@@ -1,30 +1,28 @@
 import { createContext, useContext, useState } from "react";
 import supabase from "../services/supabase";
+import { shuffleArray } from "../utils/helpers";
 
 const QuizContext = createContext();
 
 function QuizProvider({ children }) {
-  // const [quizzes, setQuizzes] = useState([]);
-  // const [questionsAndAnswers, setQuestionsAndAnswers] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [quizzes, setQuizzes] = useState([]);
+  const [questionAndAnswers, setQuestionAndAnswers] = useState([]);
+  const [questionsIds, setQuestionsIds] = useState([]);
 
   async function getAllQuizzes() {
     try {
-      setIsLoading(true);
-      const { data, error } = await supabase.from("quiz").select("id, title");
+      const { data, error } = await supabase
+        .from("quiz")
+        .select("id, title, description");
 
-      // setQuizzes(data);
-      return data;
+      setQuizzes(data);
     } catch (error) {
       alert("There was an error loading data");
-    } finally {
-      setIsLoading(false);
     }
   }
 
-  async function getQuizData(quizId) {
+  async function getQuestionAndAnswers(quizId, questionId) {
     try {
-      setIsLoading(true);
       const { data, error } = await supabase
         .from("question")
         .select(
@@ -33,26 +31,46 @@ function QuizProvider({ children }) {
           numOfCorrectAnswers,
           text,
           image,
+          id,
           answer ( * )
           `
         )
-        .eq("quizId", quizId);
+        .eq("quizId", quizId)
+        .eq("id", questionId)
+        .limit(1)
+        .single();
 
-      // setQuestionsAndAnswers(data);
-      return data;
+      setQuestionAndAnswers(data);
     } catch (error) {
       alert("There was an error loading data");
-    } finally {
-      setIsLoading(false);
+    }
+  }
+
+  async function getAllQuestionsIds(quizId) {
+    try {
+      // if (questionsIds.length > 0) setQuestionsIds([]);
+
+      const { data, error } = await supabase
+        .from("get_all_question_ids")
+        .select(`id, quizId`)
+        .eq("quizId", quizId);
+
+      const shuffled = shuffleArray(data);
+
+      setQuestionsIds(shuffled);
+    } catch (error) {
+      alert("There was an error loading data");
     }
   }
 
   const exports = {
-    // quizzes,
+    quizzes,
     getAllQuizzes,
-    // quizData: questionsAndAnswers,
-    getQuizData,
-    isLoading,
+    questionsIds,
+    getAllQuestionsIds,
+    questionAndAnswers,
+    getQuestionAndAnswers,
+    setQuestionAndAnswers,
   };
 
   return (

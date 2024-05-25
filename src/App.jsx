@@ -1,23 +1,23 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 import GlobalStyles from "./styles/GlobalStyles";
 import Quiz from "./quiz/Quiz";
-import QuizBox from "./quiz/QuizBox";
+import QuizPage from "./quiz/QuizPage";
+import QuizStarted from "./quiz/QuizStarted";
 import { useQuiz } from "./context/QuizContext";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import AppLayout from "./ui/AppLayout";
 
 function App() {
-  const [quizzes, setQuizzes] = useState([]);
-  const { getAllQuizzes } = useQuiz();
+  const { getAllQuizzes, setQuestionAndAnswers } = useQuiz();
 
   useEffect(function () {
     async function getData() {
-      const data = await getAllQuizzes();
-      setQuizzes(data);
+      await getAllQuizzes();
     }
 
     getData();
+    setQuestionAndAnswers([]);
   }, []);
 
   return (
@@ -28,18 +28,12 @@ function App() {
         <Routes>
           <Route path="/" element={<AppLayout />}>
             <Route index element={<Quiz />} />
+            <Route path="quizId/:quizId" element={<QuizPage />} />
+            <Route
+              path="/quizId/:quizId/questionId/:questionId"
+              element={<QuizStarted />}
+            />
           </Route>
-          {/* <Route index element={<Navigate replace to="dashboard" />} />
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="bookings" element={<Bookings />} />
-            <Route path="cabins" element={<Cabins />} />
-            <Route path="users" element={<Users />} />
-            <Route path="settings" element={<Settings />} />
-            <Route path="account" element={<Account />} />
-          </Route>
-
-          <Route path="login" element={<Login />} />
-          <Route path="*" element={<PageNotFound />} /> */}
         </Routes>
       </BrowserRouter>
     </>
