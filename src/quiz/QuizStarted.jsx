@@ -40,8 +40,6 @@ export default function QuizStarted() {
     }
   }, [questionIndex]);
 
-  console.log(questionId);
-
   if (questionAndAnswers && isObjectEmpty(questionAndAnswers)) {
     return <Spinner />;
   } else {

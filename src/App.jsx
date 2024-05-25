@@ -25,20 +25,18 @@ function App() {
     <>
       <GlobalStyles />
 
-      <BrowserRouter>
-        <ScrollToTop />
+      <ScrollToTop />
 
-        <Routes>
-          <Route path="/" element={<AppLayout />}>
-            <Route index element={<Quiz />} />
-            <Route path="quizId/:quizId" element={<QuizPage />} />
-            <Route
-              path="/quizId/:quizId/questionId/:questionId"
-              element={<QuizStarted />}
-            />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+      <Routes>
+        <Route path="/" element={<AppLayout />}>
+          <Route index element={<Quiz />} />
+          <Route path="quizId/:quizId" element={<QuizPage />} />
+          <Route
+            path="/quizId/:quizId/questionId/:questionId"
+            element={<QuizStarted />}
+          />
+        </Route>
+      </Routes>
     </>
   );
 }

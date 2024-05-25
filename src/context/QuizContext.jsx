@@ -1,6 +1,7 @@
 import { createContext, useContext, useState } from "react";
 import supabase from "../services/supabase";
 import { shuffleArray } from "../utils/helpers";
+import { useNavigate } from "react-router-dom";
 
 const QuizContext = createContext();
 
@@ -9,15 +10,20 @@ function QuizProvider({ children }) {
   const [questionAndAnswers, setQuestionAndAnswers] = useState([]);
   const [questionsIds, setQuestionsIds] = useState([]);
 
+  const navigate = useNavigate();
+
   async function getAllQuizzes() {
     try {
       const { data, error } = await supabase
         .from("quiz")
         .select("id, title, description");
 
+      if (error) throw new Error(error);
+
       setQuizzes(data);
     } catch (error) {
-      alert("There was an error loading data");
+      confirm("There was an error loading data. Try again later.");
+      navigate("/");
     }
   }
 
@@ -40,26 +46,30 @@ function QuizProvider({ children }) {
         .limit(1)
         .single();
 
+      if (error) throw new Error(error);
+
       setQuestionAndAnswers(data);
     } catch (error) {
-      alert("There was an error loading data");
+      confirm("There was an error loading data. Try again later.");
+      navigate("/");
     }
   }
 
   async function getAllQuestionsIds(quizId) {
     try {
-      // if (questionsIds.length > 0) setQuestionsIds([]);
-
       const { data, error } = await supabase
         .from("get_all_question_ids")
         .select(`id, quizId`)
         .eq("quizId", quizId);
 
+      if (error) throw new Error(error);
+
       const shuffled = shuffleArray(data);
 
       setQuestionsIds(shuffled);
     } catch (error) {
-      alert("There was an error loading data");
+      confirm("There was an error loading data. Try again later.");
+      navigate("/");
     }
   }
 
