@@ -3,16 +3,10 @@ import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
 import { QuizProvider } from "./context/QuizContext.jsx";
 
-// ReactDOM.createRoot(document.getElementById("root")).render(
-//   <React.StrictMode>
-//     <QuizProvider>
-//       <App />
-//     </QuizProvider>
-//   </React.StrictMode>
-// );
-
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <QuizProvider>
-    <App />
-  </QuizProvider>
+  <React.StrictMode>
+    <QuizProvider>
+      <App />
+    </QuizProvider>
+  </React.StrictMode>
 );

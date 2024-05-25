@@ -7,6 +7,7 @@ import QuizStarted from "./quiz/QuizStarted";
 import { useQuiz } from "./context/QuizContext";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import AppLayout from "./ui/AppLayout";
+import ScrollToTop from "./ui/ScrollToTop";
 
 function App() {
   const { getAllQuizzes, setQuestionAndAnswers } = useQuiz();
@@ -25,6 +26,8 @@ function App() {
       <GlobalStyles />
 
       <BrowserRouter>
+        <ScrollToTop />
+
         <Routes>
           <Route path="/" element={<AppLayout />}>
             <Route index element={<Quiz />} />

@@ -6,6 +6,7 @@ import QuestionBox from "../question/QuestionBox";
 import AnswerBox from "../answer/AnswerBox";
 
 import { isObjectEmpty } from "../utils/helpers";
+import Spinner from "../ui/Spinner";
 
 export default function QuizStarted() {
   const { quizId, questionId } = useParams();
@@ -32,15 +33,17 @@ export default function QuizStarted() {
   }, [quizId, questionId]);
 
   useEffect(() => {
-    if (questionId) {
+    if (questionsIds.length !== 0) {
       navigate(
         `/quizId/${quizId}/questionId/${questionsIds[questionIndex]?.id}`
       );
     }
   }, [questionIndex]);
 
+  console.log(questionId);
+
   if (questionAndAnswers && isObjectEmpty(questionAndAnswers)) {
-    return <p>Loading...</p>;
+    return <Spinner />;
   } else {
     return (
       <QuizBody>

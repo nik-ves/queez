@@ -56,6 +56,6 @@ const QuizPageBody = styled.section`
 `;
 
 const QuizTitle = styled.h2`
-  font-size: 35px;
-  color: white;
+  font-size: 40px;
+  color: #535bf2;
 `;
