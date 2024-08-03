@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 
-import { shuffleArray } from "../utils/helpers";
+import { shuffleArray } from "../../utils/helpers";
 
 export default function AnswerSingle({ answers }) {
   const [correctAnswer, setCorrectAnswer] = useState(null);

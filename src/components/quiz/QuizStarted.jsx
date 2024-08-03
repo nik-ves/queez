@@ -1,22 +1,24 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { useQuiz } from "../context/QuizContext";
+import { useQuiz } from "../../context/QuizContext";
 import styled from "styled-components";
 import QuestionBox from "../question/QuestionBox";
 import AnswerBox from "../answer/AnswerBox";
 
-import { isObjectEmpty } from "../utils/helpers";
+import { isObjectEmpty, getLastElement } from "../../utils/helpers";
 import Spinner from "../ui/Spinner";
 
 export default function QuizStarted() {
   const { quizId, questionId } = useParams();
   const {
-    getQuestionAndAnswers,
     questionAndAnswers,
+    getQuestionAndAnswers,
     questionsIds,
     setQuestionAndAnswers,
   } = useQuiz();
   const [questionIndex, setQuestionIndex] = useState(0);
+
+  const lastQuestionId = getLastElement(questionsIds)?.id;
 
   const navigate = useNavigate();
 
@@ -45,7 +47,12 @@ export default function QuizStarted() {
   } else {
     return (
       <QuizBody>
-        {questionAndAnswers && <QuestionBox question={questionAndAnswers} />}
+        {questionAndAnswers && (
+          <QuestionBox
+            question={questionAndAnswers}
+            questionNumber={questionIndex}
+          />
+        )}
 
         {questionAndAnswers && (
           <AnswerBox
@@ -75,7 +82,7 @@ export default function QuizStarted() {
                 setQuestionIndex((value) => value + 1);
               }}
             >
-              Next
+              {questionId == lastQuestionId ? "Finish" : "Next"}
             </button>
           </Actions>
         )}

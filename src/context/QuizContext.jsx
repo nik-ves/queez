@@ -66,6 +66,9 @@ function QuizProvider({ children }) {
 
       const shuffled = shuffleArray(data);
 
+      // const slicedArray = data.slice(0, 5);
+      // console.log(slicedArray);
+
       setQuestionsIds(shuffled);
     } catch (error) {
       confirm("There was an error loading data. Try again later.");

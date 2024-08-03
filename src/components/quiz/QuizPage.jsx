@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
-import { useQuiz } from "../context/QuizContext";
+import { useQuiz } from "../../context/QuizContext";
 import { useEffect } from "react";
 
 export default function QuizPage() {

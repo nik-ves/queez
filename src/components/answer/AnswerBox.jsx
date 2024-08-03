@@ -5,7 +5,7 @@ import AnswerMultiple from "./AnswerMultiple";
 import AnswerDropdown from "./AnswerDropdown";
 import AnswerDragDrop from "./AnswerDragDrop";
 
-export default function AnswerBox({ answers, type, correctAnswers }) {
+export default function AnswerBox({ type, answers, correctAnswers }) {
   switch (type) {
     case "single":
       return (

@@ -1,21 +1,11 @@
-import { useEffect } from "react";
 import { Link } from "react-router-dom";
-
-import { useQuiz } from "../context/QuizContext";
 import styled from "styled-components";
 
 import Spinner from "../ui/Spinner";
+import { useQuiz } from "../../context/QuizContext";
 
 export default function Quiz() {
-  const { quizzes, getAllQuizzes } = useQuiz();
-
-  useEffect(() => {
-    async function getQuizList() {
-      await getAllQuizzes();
-    }
-
-    getQuizList();
-  }, []);
+  const { quizzes } = useQuiz();
 
   if (quizzes.length === 0) {
     return <Spinner />;

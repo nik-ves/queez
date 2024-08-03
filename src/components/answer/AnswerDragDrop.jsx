@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 
-import { shuffleArray } from "../utils/helpers";
+import { shuffleArray } from "../../utils/helpers";
 
 export default function AnswerDragDrop({ answers, correctAnswers }) {
   const [shuffledArray, setShuffledArray] = useState([]);

@@ -1,16 +1,16 @@
 import { useEffect } from "react";
+import { Route, Routes } from "react-router-dom";
 
 import GlobalStyles from "./styles/GlobalStyles";
-import Quiz from "./quiz/Quiz";
-import QuizPage from "./quiz/QuizPage";
-import QuizStarted from "./quiz/QuizStarted";
+import Quiz from "./components/quiz/Quiz";
+import QuizPage from "./components/quiz/QuizPage";
+import QuizStarted from "./components/quiz/QuizStarted";
 import { useQuiz } from "./context/QuizContext";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import AppLayout from "./ui/AppLayout";
-import ScrollToTop from "./ui/ScrollToTop";
+import AppLayout from "./components/ui/AppLayout";
+import ScrollToTop from "./components/ui/ScrollToTop";
 
 function App() {
-  const { getAllQuizzes, setQuestionAndAnswers } = useQuiz();
+  const { getAllQuizzes } = useQuiz();
 
   useEffect(function () {
     async function getData() {
@@ -18,7 +18,6 @@ function App() {
     }
 
     getData();
-    setQuestionAndAnswers([]);
   }, []);
 
   return (
