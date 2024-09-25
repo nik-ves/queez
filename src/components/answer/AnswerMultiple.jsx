@@ -1,15 +1,26 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 
-import { shuffleArray } from "../../utils/helpers";
+import { shuffleArray, getAnswerIfExist } from "../../utils/helpers";
+import { useQuizResult } from "../../hooks/useQuizResult";
 
 export default function AnswerMultiple({ answers }) {
-  const [selectedAnswers, setSelectedAnswers] = useState([]);
+  const { answerMultiple, setPreventAnswer, quizResult } = useQuizResult();
+  const existingAnswer = getAnswerIfExist(
+    quizResult.multiple,
+    answers[0].questionId
+  );
+  const [selectedAnswers, setSelectedAnswers] = useState(
+    existingAnswer.length > 0 ? existingAnswer : []
+  );
   const [shuffledArray, setShuffledArray] = useState([]);
-  let correctArray = answers.filter((answer) => answer.isCorrect === true);
+
+  let correctAnswers = answers.filter((answer) => answer.isCorrect === true);
 
   function handleAnswers(id) {
-    if (selectedAnswers?.length === correctArray?.length) return;
+    if (selectedAnswers?.length === correctAnswers?.length) {
+      return;
+    }
 
     setSelectedAnswers((answers) => {
       if (answers.find((d) => d === id)) {
@@ -27,7 +38,7 @@ export default function AnswerMultiple({ answers }) {
   }
 
   function getStyles(isCorrect) {
-    if (selectedAnswers?.length >= correctArray?.length) {
+    if (selectedAnswers?.length >= correctAnswers?.length) {
       if (isCorrect === true) {
         return { borderColor: "green", scale: "1.02" };
       } else {
@@ -37,11 +48,17 @@ export default function AnswerMultiple({ answers }) {
   }
 
   useEffect(() => {
-    const shuffled = shuffleArray(answers);
-    setShuffledArray(shuffled);
+    if (selectedAnswers.length === 0) {
+      const shuffled = shuffleArray(answers);
+      setShuffledArray(shuffled);
+    } else {
+      setShuffledArray(answers);
+      setPreventAnswer(false);
+    }
 
     return () => {
-      setSelectedAnswers([]);
+      setSelectedAnswers(null);
+      setPreventAnswer(true);
     };
   }, [answers]);
 
@@ -52,8 +69,12 @@ export default function AnswerMultiple({ answers }) {
           return (
             <AnswerLine
               key={idx}
+              disabled={selectedAnswers?.length === correctAnswers?.length}
               style={getStyles(answer.isCorrect)}
-              onClick={() => handleAnswers(answer.id)}
+              onClick={() => {
+                answerMultiple(answer, correctAnswers);
+                handleAnswers(answer.id);
+              }}
               className={answerExists(answer.id) ? "active" : "undefined"}
             >
               {answer.text}
@@ -63,8 +84,12 @@ export default function AnswerMultiple({ answers }) {
           return (
             <CodeBox
               key={idx}
+              disabled={selectedAnswers?.length === correctAnswers?.length}
               style={getStyles(answer.isCorrect)}
-              onClick={() => handleAnswers(answer.id)}
+              onClick={() => {
+                answerMultiple(answer, correctAnswers);
+                handleAnswers(answer.id);
+              }}
               className={answerExists(answer.id) ? "active" : "undefined"}
             >
               <code>{answer.text}</code>
@@ -76,7 +101,7 @@ export default function AnswerMultiple({ answers }) {
   );
 }
 
-const CodeBox = styled.div`
+const CodeBox = styled.button`
   margin-bottom: 10px;
   padding: 20px;
   border: 1px solid white;

@@ -1,22 +1,27 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import { useQuiz } from "../../context/QuizContext";
 import { useEffect } from "react";
 
+import FormGroup from "@mui/material/FormGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Switch from "@mui/material/Switch";
+
 export default function QuizPage() {
   const { quizId } = useParams();
-  const { quizzes, getAllQuestionsIds, questionsIds } = useQuiz();
-  const navigate = useNavigate();
+  const { quizzes, startQuiz, shuffle, setShuffle } = useQuiz();
 
   const selectedQuiz = quizzes.find((quiz) => quiz.id == quizId);
 
   useEffect(() => {
-    async function getIds() {
-      await getAllQuestionsIds(quizId);
+    if (selectedQuiz?.title !== undefined) {
+      document.title = `Queez | ${selectedQuiz?.title}`;
     }
 
-    getIds();
-  }, []);
+    return () => {
+      document.title = "Queez";
+    };
+  }, [selectedQuiz]);
 
   return (
     <QuizPageBody>
@@ -26,9 +31,26 @@ export default function QuizPage() {
 
       <p>{selectedQuiz?.description}</p>
 
+      <StyledFormGroup>
+        <FormControlLabel
+          sx={{
+            color: "white",
+          }}
+          control={
+            <Switch
+              checked={shuffle}
+              onChange={() => {
+                setShuffle(!shuffle);
+              }}
+            />
+          }
+          label="Shuffle questions"
+        />
+      </StyledFormGroup>
+
       <button
         onClick={() => {
-          navigate(`/quizId/${quizId}/questionId/${questionsIds[0]?.id}`);
+          startQuiz(quizId);
         }}
       >
         Start
@@ -58,4 +80,16 @@ const QuizPageBody = styled.section`
 const QuizTitle = styled.h2`
   font-size: 40px;
   color: #535bf2;
+`;
+
+const StyledFormGroup = styled(FormGroup)`
+  font-style: inherit;
+  color: "white";
+  margin-bottom: 10px;
+`;
+
+const StyledSwitch = styled(Switch)`
+  font-style: inherit;
+  color: "white";
+  margin-bottom: 10px;
 `;

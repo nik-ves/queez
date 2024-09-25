@@ -1,10 +1,22 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-
-import { shuffleArray } from "../../utils/helpers";
+import { shuffleArray, getAnswerIfExist } from "../../utils/helpers";
+import { useQuizResult } from "../../hooks/useQuizResult";
 
 export default function AnswerDragDrop({ answers, correctAnswers }) {
+  const { quizResult, setPreventAnswer } = useQuizResult();
+
+  const existingAnswer = getAnswerIfExist(
+    quizResult.dragdrop,
+    answers[0]?.questionId
+  );
+
+  console.log(existingAnswer);
+
   const [shuffledArray, setShuffledArray] = useState([]);
+  const [selectedAnswers, setSelectedAnswers] = useState(
+    existingAnswer.length > 0 ? existingAnswer : []
+  );
 
   function handleOnDrag(event, answer) {
     event.dataTransfer?.setData("answer", JSON.stringify(answer));
@@ -13,6 +25,14 @@ export default function AnswerDragDrop({ answers, correctAnswers }) {
   useEffect(() => {
     const shuffled = shuffleArray(answers);
     setShuffledArray(shuffled);
+
+    if (existingAnswer?.length > 0) {
+      setPreventAnswer(false);
+    }
+
+    return () => {
+      setPreventAnswer(true);
+    };
   }, [answers]);
 
   return (
@@ -24,7 +44,9 @@ export default function AnswerDragDrop({ answers, correctAnswers }) {
             draggable
             onDragStart={(event) => handleOnDrag(event, answer)}
           >
-            {answer.text}
+            {selectedAnswers.length === correctAnswers
+              ? answer.correctArrayPlace + 1 + " - " + answer.text
+              : answer.text}
           </AnswerLine>
         ))}
       </Answers>
@@ -32,27 +54,88 @@ export default function AnswerDragDrop({ answers, correctAnswers }) {
       <DropBody>
         {correctAnswers > 0 &&
           [...Array(correctAnswers)].map((x, i) => (
-            <DropLine answers={answers} key={i} index={i} />
+            <DropLine
+              key={i}
+              selectedAnswers={selectedAnswers}
+              setSelectedAnswers={setSelectedAnswers}
+              correctAnswers={correctAnswers}
+              answers={answers}
+              index={i}
+            />
           ))}
       </DropBody>
     </AnswerBody>
   );
 }
 
-function DropLine({ index, answers }) {
-  const [answer, setAnswer] = useState();
+function DropLine({
+  index,
+  answers,
+  setSelectedAnswers,
+  selectedAnswers,
+  correctAnswers,
+}) {
+  const { quizResult, answerDragDrop } = useQuizResult();
+  const existingAnswer = getAnswerIfExist(
+    quizResult.dragdrop,
+    answers[0]?.questionId,
+    index
+  )[0];
+  const [answer, setAnswer] = useState(existingAnswer || null);
 
   function handleOnDrop(event) {
-    const answer = JSON.parse(event.dataTransfer?.getData("answer"));
-    setAnswer(answer);
+    const draggedAnswer = JSON.parse(event.dataTransfer?.getData("answer"));
+
+    if (selectedAnswers.length !== correctAnswers) {
+      setAnswer(draggedAnswer);
+      setSelectedAnswers((prevState) => {
+        let duplicate = prevState.find((item) => item.id === index);
+
+        if (duplicate) {
+          const filteredState = prevState.map((obj) =>
+            obj.id === duplicate.id
+              ? {
+                  ...obj,
+                  correctArrayPlace: draggedAnswer.correctArrayPlace,
+                  text: draggedAnswer.text,
+                  questionId: draggedAnswer.questionId,
+                }
+              : obj
+          );
+
+          return [...filteredState];
+        }
+
+        return [
+          ...prevState,
+          {
+            id: index,
+            correctArrayPlace: draggedAnswer.correctArrayPlace,
+            text: draggedAnswer.text,
+            questionId: draggedAnswer.questionId,
+          },
+        ];
+      });
+
+      answerDragDrop(
+        {
+          id: index,
+          correctArrayPlace: draggedAnswer.correctArrayPlace,
+          text: draggedAnswer.text,
+          questionId: draggedAnswer.questionId,
+        },
+        answers,
+        correctAnswers
+      );
+    }
   }
 
   function handleDragOver(event) {
     event.preventDefault();
   }
 
-  function getStyles() {
-    if (answer) {
+  function setStyles() {
+    if (selectedAnswers.length === correctAnswers) {
       if (answer?.correctArrayPlace === index) {
         return { backgroundColor: "green" };
       } else {
@@ -71,7 +154,7 @@ function DropLine({ index, answers }) {
 
   return (
     <AnswerLine
-      style={getStyles()}
+      style={setStyles()}
       onDrop={handleOnDrop}
       onDragOver={handleDragOver}
     >

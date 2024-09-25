@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { useQuiz } from "../../context/QuizContext";
 import styled from "styled-components";
 import QuestionBox from "../question/QuestionBox";
 import AnswerBox from "../answer/AnswerBox";
 
-import { isObjectEmpty, getLastElement } from "../../utils/helpers";
+import { isObjectEmpty } from "../../utils/helpers";
 import Spinner from "../ui/Spinner";
 
 export default function QuizStarted() {
@@ -15,32 +15,31 @@ export default function QuizStarted() {
     getQuestionAndAnswers,
     questionsIds,
     setQuestionAndAnswers,
+    questionIndex,
+    changeQuestion,
+    finishQuiz,
+    preventAnswer,
   } = useQuiz();
-  const [questionIndex, setQuestionIndex] = useState(0);
 
-  const lastQuestionId = getLastElement(questionsIds)?.id;
-
-  const navigate = useNavigate();
+  const firstQuestionId = questionsIds[0]?.id;
+  const lastQuestionId = questionsIds[questionsIds?.length - 1]?.id;
 
   useEffect(() => {
     async function getData() {
       await getQuestionAndAnswers(quizId, questionId);
     }
 
-    if (quizId && questionId) getData();
+    if (
+      (quizId !== undefined && questionId !== undefined) ||
+      questionsIds.length > 0
+    ) {
+      getData();
+    }
 
     return () => {
       setQuestionAndAnswers([]);
     };
   }, [quizId, questionId]);
-
-  useEffect(() => {
-    if (questionsIds.length !== 0) {
-      navigate(
-        `/quizId/${quizId}/questionId/${questionsIds[questionIndex]?.id}`
-      );
-    }
-  }, [questionIndex]);
 
   if (questionAndAnswers && isObjectEmpty(questionAndAnswers)) {
     return <Spinner />;
@@ -65,21 +64,26 @@ export default function QuizStarted() {
         {questionAndAnswers && (
           <Actions>
             <button
-              disabled={questionIndex === 0 || questionsIds.length === 0}
+              disabled={
+                firstQuestionId == questionId ||
+                questionsIds.length === 0 ||
+                preventAnswer
+              }
               onClick={() => {
-                setQuestionIndex((value) => value - 1);
+                changeQuestion(quizId, "-");
               }}
             >
               Previous
             </button>
 
             <button
-              disabled={
-                questionIndex + 1 === questionIndex?.length ||
-                questionsIds.length === 0
-              }
+              disabled={questionsIds.length === 0 || preventAnswer}
               onClick={() => {
-                setQuestionIndex((value) => value + 1);
+                if (questionId != lastQuestionId) {
+                  changeQuestion(quizId, "+");
+                } else {
+                  finishQuiz();
+                }
               }}
             >
               {questionId == lastQuestionId ? "Finish" : "Next"}

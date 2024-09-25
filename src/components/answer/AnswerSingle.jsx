@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-
-import { shuffleArray } from "../../utils/helpers";
+import { shuffleArray, getAnswerIfExist } from "../../utils/helpers";
+import { useQuizResult } from "../../hooks/useQuizResult";
 
 export default function AnswerSingle({ answers }) {
-  const [correctAnswer, setCorrectAnswer] = useState(null);
+  const { quizResult, answerSingle, setPreventAnswer } = useQuizResult();
+
+  const [correctAnswer, setCorrectAnswer] = useState(
+    getAnswerIfExist(quizResult.single, answers[0].questionId)[0] || null
+  );
   const [shuffledArray, setShuffledArray] = useState([]);
 
   function getStyles(isCorrect) {
@@ -18,11 +22,17 @@ export default function AnswerSingle({ answers }) {
   }
 
   useEffect(() => {
-    const shuffled = shuffleArray(answers);
-    setShuffledArray(shuffled);
+    if (!correctAnswer) {
+      const shuffled = shuffleArray(answers);
+      setShuffledArray(shuffled);
+    } else {
+      setShuffledArray(answers);
+      setPreventAnswer(false);
+    }
 
     return () => {
       setCorrectAnswer(null);
+      setPreventAnswer(true);
     };
   }, [answers]);
 
@@ -33,8 +43,13 @@ export default function AnswerSingle({ answers }) {
           return (
             <AnswerLine
               key={idx}
+              disabled={correctAnswer !== null}
               style={getStyles(answer.isCorrect)}
-              onClick={() => setCorrectAnswer(answer.isCorrect)}
+              onClick={() => {
+                answerSingle(answer);
+                setCorrectAnswer(answer.isCorrect);
+                setPreventAnswer(false);
+              }}
             >
               {answer.text}
             </AnswerLine>
@@ -44,7 +59,11 @@ export default function AnswerSingle({ answers }) {
             <CodeBox
               key={idx}
               style={getStyles(answer.isCorrect)}
-              onClick={() => setCorrectAnswer(answer.isCorrect)}
+              onClick={() => {
+                answerSingle(answer);
+                setCorrectAnswer(answer.isCorrect);
+                setPreventAnswer(false);
+              }}
             >
               <code>{answer.text}</code>
             </CodeBox>

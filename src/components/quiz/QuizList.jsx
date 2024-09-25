@@ -4,7 +4,7 @@ import styled from "styled-components";
 import Spinner from "../ui/Spinner";
 import { useQuiz } from "../../context/QuizContext";
 
-export default function Quiz() {
+export default function QuizList() {
   const { quizzes } = useQuiz();
 
   if (quizzes.length === 0) {
