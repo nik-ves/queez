@@ -25,9 +25,7 @@ a:hover {
 
 body {
   display: flex;
-  /* place-items: center; */
-  /* min-width: 320px; */
-  min-height: 100vh;
+  min-height: 90vh;
 }
 
 h1 {

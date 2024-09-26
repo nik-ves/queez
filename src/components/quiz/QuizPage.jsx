@@ -1,22 +1,22 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import { useQuiz } from "../../context/QuizContext";
 import { useEffect } from "react";
 
 export default function QuizPage() {
   const { quizId } = useParams();
-  const { quizzes, getAllQuestionsIds, questionsIds } = useQuiz();
-  const navigate = useNavigate();
-
+  const { quizzes, startQuiz, setNumOfQuestions } = useQuiz();
   const selectedQuiz = quizzes.find((quiz) => quiz.id == quizId);
 
   useEffect(() => {
-    async function getIds() {
-      await getAllQuestionsIds(quizId);
+    if (selectedQuiz?.title !== undefined) {
+      document.title = `Queez | ${selectedQuiz?.title}`;
     }
 
-    getIds();
-  }, []);
+    return () => {
+      document.title = "Queez";
+    };
+  }, [selectedQuiz]);
 
   return (
     <QuizPageBody>
@@ -26,9 +26,23 @@ export default function QuizPage() {
 
       <p>{selectedQuiz?.description}</p>
 
+      <label>Num of questions to fetch:</label>
+      <StyledSelect
+        onChange={(event) => {
+          setNumOfQuestions(event.target.value);
+        }}
+      >
+        <option value={30}>30</option>
+        <option value={50}>50</option>
+        <option value={100}>100</option>
+        <option value={150}>150</option>
+        <option value={200}>200</option>
+        <option value="All">All</option>
+      </StyledSelect>
+
       <button
         onClick={() => {
-          navigate(`/quizId/${quizId}/questionId/${questionsIds[0]?.id}`);
+          startQuiz(quizId);
         }}
       >
         Start
@@ -37,8 +51,23 @@ export default function QuizPage() {
   );
 }
 
+const StyledSelect = styled.select`
+  width: 60px;
+  margin-bottom: 30px;
+  padding: 10px;
+  font: inherit;
+`;
+
 const QuizPageBody = styled.section`
   margin: 100px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  & label {
+    color: white;
+    font-size: 20px;
+  }
 
   & p {
     white-space: pre-line;

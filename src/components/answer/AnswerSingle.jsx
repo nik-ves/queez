@@ -1,9 +1,14 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-
-import { shuffleArray } from "../../utils/helpers";
+import {
+  shuffleArray,
+  getAnswerSingle,
+  isObjectEmpty,
+} from "../../utils/helpers";
+import { useQuizResult } from "../../hooks/useQuizResult";
 
 export default function AnswerSingle({ answers }) {
+  const { quizResult, answerSingle, setPreventAnswer } = useQuizResult();
   const [correctAnswer, setCorrectAnswer] = useState(null);
   const [shuffledArray, setShuffledArray] = useState([]);
 
@@ -18,11 +23,18 @@ export default function AnswerSingle({ answers }) {
   }
 
   useEffect(() => {
+    const origValue = getAnswerSingle(quizResult.single, answers[0].questionId);
+
+    if (origValue && !isObjectEmpty(origValue)) {
+      setCorrectAnswer(origValue.isCorrect);
+      setPreventAnswer(false);
+    }
+
     const shuffled = shuffleArray(answers);
     setShuffledArray(shuffled);
 
     return () => {
-      setCorrectAnswer(null);
+      setPreventAnswer(true);
     };
   }, [answers]);
 
@@ -33,8 +45,13 @@ export default function AnswerSingle({ answers }) {
           return (
             <AnswerLine
               key={idx}
+              disabled={correctAnswer !== null}
               style={getStyles(answer.isCorrect)}
-              onClick={() => setCorrectAnswer(answer.isCorrect)}
+              onClick={() => {
+                answerSingle(answer);
+                setCorrectAnswer(answer.isCorrect);
+                setPreventAnswer(false);
+              }}
             >
               {answer.text}
             </AnswerLine>
@@ -43,8 +60,13 @@ export default function AnswerSingle({ answers }) {
           return (
             <CodeBox
               key={idx}
+              disabled={correctAnswer !== null}
               style={getStyles(answer.isCorrect)}
-              onClick={() => setCorrectAnswer(answer.isCorrect)}
+              onClick={() => {
+                answerSingle(answer);
+                setCorrectAnswer(answer.isCorrect);
+                setPreventAnswer(false);
+              }}
             >
               <code>{answer.text}</code>
             </CodeBox>
@@ -55,15 +77,22 @@ export default function AnswerSingle({ answers }) {
   );
 }
 
-const CodeBox = styled.div`
-  margin-bottom: 10px;
-  padding: 20px;
+const CodeBox = styled.button`
   border: 1px solid white;
-
+  width: 100%;
+  padding: 0 15px;
+  padding: 10px;
   font-size: 15px;
   transition: all 0.2s;
   font-weight: inherit;
   color: white;
+
+  background-color: transparent;
+  font-weight: inherit;
+  text-align: left;
+  border-radius: 0;
+  margin-bottom: 15px;
+  outline: none;
 
   &:hover {
     cursor: pointer;

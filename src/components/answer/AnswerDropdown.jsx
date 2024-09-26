@@ -1,15 +1,23 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
+import { useQuizResult } from "../../hooks/useQuizResult";
+import { getAnswerIfExist } from "../../utils/helpers";
 
 export default function AnswerDropdown({ answers }) {
+  const [selectedAnswers, setSelectedAnswers] = useState([]);
+
   return (
     <>
       {answers.map((answer, idx) => {
         const options = answer.options;
+
+        const allCorrectAnswers = answers.map((answer) => {
+          return {
+            id: answer.id,
+            questionId: answer.questionId,
+            option: answer.correctOption,
+          };
+        });
 
         if (answer.type === "text") {
           return (
@@ -19,6 +27,11 @@ export default function AnswerDropdown({ answers }) {
               <DropdownMenu
                 options={options}
                 correctOption={answer.correctOption}
+                allCorrectAnswers={allCorrectAnswers}
+                questionId={answer.questionId}
+                selectedAnswers={selectedAnswers}
+                setSelectedAnswers={setSelectedAnswers}
+                index={idx}
               />
             </AnswerLine>
           );
@@ -30,6 +43,11 @@ export default function AnswerDropdown({ answers }) {
               <DropdownMenu
                 options={options}
                 correctOption={answer.correctOption}
+                allCorrectAnswers={allCorrectAnswers}
+                questionId={answer.questionId}
+                selectedAnswers={selectedAnswers}
+                setSelectedAnswers={setSelectedAnswers}
+                index={idx}
               />
             </CodeBox>
           );
@@ -39,80 +57,140 @@ export default function AnswerDropdown({ answers }) {
   );
 }
 
-function DropdownMenu({ options, correctOption }) {
-  const [selectedAnswer, setSelectedAnswer] = useState("none");
-  const [selectStyles, setSelectStyles] = useState({
-    "& .MuiSelect-select": {
-      color: "black",
-      backgroundColor: "white",
-    },
-  });
+function DropdownMenu({
+  options,
+  correctOption,
+  allCorrectAnswers,
+  questionId,
+  index,
+  selectedAnswers,
+  setSelectedAnswers,
+}) {
+  const { quizResult, answerDropdown, setPreventAnswer } = useQuizResult();
+  const existingAnswer = getAnswerIfExist(
+    quizResult.dropdown,
+    allCorrectAnswers[0].questionId,
+    index
+  )[0];
+
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
+
+  useEffect(() => {
+    if (existingAnswer) {
+      setSelectedAnswers((oldState) => {
+        let duplicate = oldState?.find((item) => item.id === existingAnswer.id);
+
+        if (duplicate) {
+          return [...oldState];
+        } else {
+          return [...oldState, existingAnswer];
+        }
+      });
+      setSelectedAnswer(existingAnswer?.option);
+      setPreventAnswer(false);
+    }
+
+    return () => {
+      setPreventAnswer(true);
+    };
+  }, []);
 
   function handleSelect(event) {
     setSelectedAnswer(event.target.value);
 
-    if (event.target.value !== "") {
-      if (event.target.value === correctOption) {
-        setSelectStyles({
-          "& .MuiSelect-select": {
-            color: "black",
-            backgroundColor: "green",
-          },
-        });
-      } else {
-        if (event.target.value === "none") {
-          setSelectStyles({
-            "& .MuiSelect-select": {
-              color: "black",
-              backgroundColor: "white",
-            },
-          });
-        } else {
-          setSelectStyles({
-            "& .MuiSelect-select": {
-              color: "black",
-              backgroundColor: "red",
-            },
-          });
-        }
+    setSelectedAnswers((prevState) => {
+      let duplicate = prevState.find((item) => item.id === index);
+
+      if (duplicate) {
+        const filteredState = prevState.map((obj) =>
+          obj.id === duplicate.id ? { ...obj, answer: event.target.value } : obj
+        );
+
+        return [...filteredState];
       }
+
+      return [...prevState, { id: index, answer: event.target.value }];
+    });
+
+    answerDropdown(
+      { id: index, questionId: questionId, option: event.target.value },
+      allCorrectAnswers
+    );
+  }
+
+  function styles(_option) {
+    if (_option === "none") {
+      return { color: "black", backgroundColor: "white" };
+    } else if (
+      _option == correctOption &&
+      selectedAnswers.length === allCorrectAnswers.length
+    ) {
+      return { color: "white", backgroundColor: "green" };
+    } else if (
+      _option != correctOption &&
+      selectedAnswers.length === allCorrectAnswers.length
+    ) {
+      return { color: "white", backgroundColor: "red" };
     }
   }
 
-  useEffect(() => {
-    return () => {
-      setSelectStyles({
-        "& .MuiSelect-select": {
-          color: "black",
-          backgroundColor: "white",
-        },
-      });
-
-      setSelectedAnswer("none");
-    };
-  }, [options]);
-
   return (
-    <FormControl sx={{ m: 1, width: 300 }} size="small">
-      <Select
-        sx={selectStyles}
-        value={selectedAnswer}
+    <SelectBody>
+      <select
         onChange={handleSelect}
-        displayEmpty
-        defaultValue="none"
+        name="languages"
+        id="languages"
+        defaultValue={"none"}
+        style={styles(selectedAnswer)}
+        value={selectedAnswer ? selectedAnswer : null}
       >
-        <MenuItem value="none">&nbsp;</MenuItem>
+        <option disabled={true} style={styles("none")} value="none">
+          &nbsp;
+        </option>
         {options?.map((option, idx) => {
           return (
-            <MenuItem key={idx} value={option}>
+            <option
+              disabled={selectedAnswers.length === allCorrectAnswers.length}
+              style={selectedAnswer !== "none" ? styles(option) : null}
+              key={idx}
+              value={option}
+            >
               {option}
-            </MenuItem>
+            </option>
           );
         })}
-      </Select>
-    </FormControl>
+      </select>
+    </SelectBody>
   );
 }
+
+const SelectBody = styled.div`
+  display: flex;
+  flex-direction: column;
+  color: black;
+
+  & select {
+    border: none;
+    padding: 10px;
+    outline: none;
+    font-family: inherit;
+    border-radius: 5px;
+    font-size: 16px;
+    color: black;
+    width: 200px;
+
+    &:hover,
+    &:focus {
+      cursor: pointer;
+    }
+
+    &:checked,
+    &:disabled {
+      color: blue;
+      background-color: blue;
+    }
+  }
+`;
 
 const CodeBox = styled.div`
   margin-bottom: 10px;
