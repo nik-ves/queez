@@ -1,7 +1,14 @@
+import styled from "styled-components";
+import { percentage } from "../../utils/helpers";
 import { useQuiz } from "../../context/QuizContext";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function QuizResult() {
-  const { quizResult } = useQuiz();
+  const { quizResult, quizStatus, startQuiz, setIncorrectQuestions } =
+    useQuiz();
+
+  const navigate = useNavigate();
 
   const { correct: correctSingle, incorrect: incorrectSingle } =
     quizResult.single;
@@ -12,78 +19,164 @@ export default function QuizResult() {
   const { correct: correctDropdown, incorrect: incorrectDropdown } =
     quizResult.dropdown;
 
-  const setCorrectMultiple = new Set(
-    correctMultiple.map((answer) => {
-      return answer.questionId;
-    })
-  );
+  // SINGLE DATA
+  const singleCorrect = correctSingle?.map((answer) => {
+    return answer.questionId;
+  });
+  const singleIncorrect = incorrectSingle?.map((answer) => {
+    return answer.questionId;
+  });
 
-  const setIncorrectMultiple = new Set(
-    incorrectMultiple.map((answer) => {
-      return answer.questionId;
-    })
-  );
+  // MULTIPLE DATA
+  const multipleCorrect = Array.from(
+    new Set(
+      correctMultiple.map((answer) => {
+        return answer.questionId;
+      })
+    )
+  ).map((answer) => {
+    return answer;
+  });
 
-  const setCorrectDragdrop = new Set(
-    correctDragdrop.map((answer) => {
-      return answer.questionId;
-    })
-  );
+  const multipleIncorrect = Array.from(
+    new Set(
+      incorrectMultiple.map((answer) => {
+        return answer.questionId;
+      })
+    )
+  ).map((answer) => {
+    return answer;
+  });
 
-  const setIncorrectDragdrop = new Set(
-    incorrectDragdrop.map((answer) => {
-      return answer.questionId;
-    })
-  );
+  // DRAGDROP DATA
+  const dragdropCorrect = Array.from(
+    new Set(
+      correctDragdrop.map((answer) => {
+        return answer.questionId;
+      })
+    )
+  ).map((answer) => {
+    return answer;
+  });
 
-  const setCorrectDropdown = new Set(
-    correctDropdown.map((answer) => {
-      return answer.questionId;
-    })
-  );
+  const dragdropIncorrect = Array.from(
+    new Set(
+      incorrectDragdrop.map((answer) => {
+        return answer.questionId;
+      })
+    )
+  ).map((answer) => {
+    return answer;
+  });
 
-  const setIncorrectDropdown = new Set(
-    incorrectDropdown.map((answer) => {
-      return answer.questionId;
-    })
-  );
+  // DROPDOWN DATA
+  const dropdownCorrect = Array.from(
+    new Set(
+      correctDropdown.map((answer) => {
+        return answer.questionId;
+      })
+    )
+  ).map((answer) => {
+    return answer;
+  });
 
-  console.log(quizResult);
+  const dropdownIncorrect = Array.from(
+    new Set(
+      incorrectDropdown.map((answer) => {
+        return answer.questionId;
+      })
+    )
+  ).map((answer) => {
+    return answer;
+  });
+
+  const numOfCorrect =
+    singleCorrect.length +
+    multipleCorrect.length +
+    dragdropCorrect.length +
+    dropdownCorrect.length;
+
+  const numOfIncorrect =
+    singleIncorrect.length +
+    multipleIncorrect.length +
+    dragdropIncorrect.length +
+    dropdownIncorrect.length;
+
+  const total = numOfCorrect + numOfIncorrect;
+
+  const successPercentage = percentage(numOfCorrect, total);
+
+  const totalIncorrect = [
+    ...singleIncorrect,
+    ...multipleIncorrect,
+    ...dragdropIncorrect,
+    ...dropdownIncorrect,
+  ].sort((a, b) => a - b);
+
+  useEffect(() => {
+    setIncorrectQuestions(totalIncorrect);
+  }, []);
 
   return (
-    <div>
-      <h1>single correct</h1>
-      {correctSingle?.map((answer, idx) => {
-        return <p key={idx}>{answer?.questionId}</p>;
-      })}
-      <h1>single incorrect</h1>
-      {Array.from(incorrectSingle).map((answer, idx) => {
-        return <p key={idx}>{answer?.questionId}</p>;
-      })}
-      <h1>multiple correct</h1>
-      {Array.from(setCorrectMultiple).map((answer, idx) => {
-        return <p key={idx}>{answer}</p>;
-      })}
-      <h1>multiple incorrect</h1>
-      {Array.from(setIncorrectMultiple).map((answer, idx) => {
-        return <p key={idx}>{answer}</p>;
-      })}
-      <h1>dragdrop correct</h1>
-      {Array.from(setCorrectDragdrop).map((answer, idx) => {
-        return <p key={idx}>{answer}</p>;
-      })}
-      <h1>dragdrop incorrect</h1>
-      {Array.from(setIncorrectDragdrop).map((answer, idx) => {
-        return <p key={idx}>{answer}</p>;
-      })}
-      <h1>dropdown correct</h1>
-      {Array.from(setCorrectDropdown).map((answer, idx) => {
-        return <p key={idx}>{answer}</p>;
-      })}
-      <h1>dropdown incorrect</h1>
-      {Array.from(setIncorrectDropdown).map((answer, idx) => {
-        return <p key={idx}>{answer}</p>;
-      })}
-    </div>
+    <Body>
+      <h1>{successPercentage >= 70 ? "You passed!" : "You failed."}</h1>
+
+      <Details>
+        <h2>Correct answers: {numOfCorrect}</h2>
+        <h2>Incorrect answers: {numOfIncorrect}</h2>
+      </Details>
+
+      <Actions>
+        <button
+          onClick={() => {
+            startQuiz(quizStatus?.quizId);
+          }}
+        >
+          Start again
+        </button>
+        {totalIncorrect.length > 0 ? (
+          <button
+            onClick={() => {
+              navigate(
+                `/quizId/${quizStatus?.quizId}/questionId/${totalIncorrect[0]}`
+              );
+            }}
+          >
+            Review incorrect answers
+          </button>
+        ) : null}
+      </Actions>
+    </Body>
   );
 }
+
+const Body = styled.div`
+  margin-top: 50px;
+  background-color: grey;
+  padding: 20px;
+  border-radius: 10px;
+
+  & h1 {
+    text-align: center;
+  }
+`;
+
+const Details = styled.div`
+  margin-top: 20px;
+  font-size: 20px;
+
+  & h2:first-child {
+    color: darkgreen;
+  }
+
+  & h2:last-child {
+    color: darkred;
+  }
+`;
+
+const Actions = styled.div`
+  margin-top: 20px;
+
+  display: flex;
+  gap: 20px;
+`;

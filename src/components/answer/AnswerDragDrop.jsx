@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { shuffleArray, getAnswerIfExist } from "../../utils/helpers";
+import {
+  shuffleArray,
+  getAnswerIfExist,
+  isObjectEmpty,
+} from "../../utils/helpers";
 import { useQuizResult } from "../../hooks/useQuizResult";
 
 export default function AnswerDragDrop({ answers, correctAnswers }) {
@@ -11,24 +15,24 @@ export default function AnswerDragDrop({ answers, correctAnswers }) {
     answers[0]?.questionId
   );
 
-  console.log(existingAnswer);
-
   const [shuffledArray, setShuffledArray] = useState([]);
-  const [selectedAnswers, setSelectedAnswers] = useState(
-    existingAnswer.length > 0 ? existingAnswer : []
-  );
+  // const [selectedAnswers, setSelectedAnswers] = useState(
+  //   existingAnswer.length > 0 ? existingAnswer : []
+  // );
+  const [selectedAnswers, setSelectedAnswers] = useState([]);
 
   function handleOnDrag(event, answer) {
     event.dataTransfer?.setData("answer", JSON.stringify(answer));
   }
 
   useEffect(() => {
-    const shuffled = shuffleArray(answers);
-    setShuffledArray(shuffled);
-
     if (existingAnswer?.length > 0) {
       setPreventAnswer(false);
+      setSelectedAnswers(existingAnswer);
     }
+
+    const shuffled = shuffleArray(answers);
+    setShuffledArray(shuffled);
 
     return () => {
       setPreventAnswer(true);
@@ -75,13 +79,13 @@ function DropLine({
   selectedAnswers,
   correctAnswers,
 }) {
-  const { quizResult, answerDragDrop } = useQuizResult();
+  const { quizResult, answerDragDrop, setPreventAnswer } = useQuizResult();
   const existingAnswer = getAnswerIfExist(
     quizResult.dragdrop,
     answers[0]?.questionId,
     index
   )[0];
-  const [answer, setAnswer] = useState(existingAnswer || null);
+  const [answer, setAnswer] = useState(existingAnswer?.text || null);
 
   function handleOnDrop(event) {
     const draggedAnswer = JSON.parse(event.dataTransfer?.getData("answer"));
@@ -147,9 +151,10 @@ function DropLine({
   }
 
   useEffect(() => {
-    return () => {
-      setAnswer(null);
-    };
+    if (existingAnswer && !isObjectEmpty(existingAnswer)) {
+      setAnswer(existingAnswer);
+      setPreventAnswer(false);
+    }
   }, [answers]);
 
   return (

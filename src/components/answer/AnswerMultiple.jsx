@@ -11,11 +11,11 @@ export default function AnswerMultiple({ answers }) {
     answers[0].questionId
   );
   const [selectedAnswers, setSelectedAnswers] = useState(
-    existingAnswer.length > 0 ? existingAnswer : []
+    existingAnswer?.length > 0 ? existingAnswer : []
   );
   const [shuffledArray, setShuffledArray] = useState([]);
 
-  let correctAnswers = answers.filter((answer) => answer.isCorrect === true);
+  let correctAnswers = answers?.filter((answer) => answer.isCorrect === true);
 
   function handleAnswers(id) {
     if (selectedAnswers?.length === correctAnswers?.length) {
@@ -23,8 +23,8 @@ export default function AnswerMultiple({ answers }) {
     }
 
     setSelectedAnswers((answers) => {
-      if (answers.find((d) => d === id)) {
-        return answers.filter((d) => d !== id);
+      if (answers?.find((d) => d === id)) {
+        return answers?.filter((d) => d !== id);
       }
 
       return [...answers, id];
@@ -32,7 +32,7 @@ export default function AnswerMultiple({ answers }) {
   }
 
   function answerExists(id) {
-    if (selectedAnswers.length > 0) {
+    if (selectedAnswers?.length > 0) {
       return selectedAnswers.find((answerId) => answerId === id);
     }
   }
@@ -48,16 +48,15 @@ export default function AnswerMultiple({ answers }) {
   }
 
   useEffect(() => {
-    if (selectedAnswers.length === 0) {
-      const shuffled = shuffleArray(answers);
-      setShuffledArray(shuffled);
-    } else {
-      setShuffledArray(answers);
+    if (selectedAnswers.length > 0) {
+      setSelectedAnswers(existingAnswer);
       setPreventAnswer(false);
     }
 
+    const shuffled = shuffleArray(answers);
+    setShuffledArray(shuffled);
+
     return () => {
-      setSelectedAnswers(null);
       setPreventAnswer(true);
     };
   }, [answers]);
@@ -102,10 +101,21 @@ export default function AnswerMultiple({ answers }) {
 }
 
 const CodeBox = styled.button`
-  margin-bottom: 10px;
-  padding: 20px;
   border: 1px solid white;
+  width: 100%;
+  padding: 0 15px;
+  padding: 10px;
+  font-size: 15px;
+  transition: all 0.2s;
+  font-weight: inherit;
   color: white;
+
+  background-color: transparent;
+  font-weight: inherit;
+  text-align: left;
+  border-radius: 0;
+  margin-bottom: 15px;
+  outline: none;
 
   @media only screen and (max-width: 1000px) {
     padding: 10px;
@@ -114,10 +124,6 @@ const CodeBox = styled.button`
   @media only screen and (max-width: 500px) {
     font-size: 13px;
   }
-
-  font-size: 15px;
-  transition: all 0.2s;
-  font-weight: inherit;
 
   &:hover {
     cursor: pointer;

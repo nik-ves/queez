@@ -16,14 +16,10 @@ function setHeader(type) {
   }
 }
 
-export default function QuestionBox({ question, questionNumber }) {
+export default function QuestionBox({ question }) {
   return (
     <QuestionBody>
-      {question?.answerType && (
-        <h2>
-          #{questionNumber + 1} {setHeader(question?.answerType)}
-        </h2>
-      )}
+      {question?.answerType && <h2>{setHeader(question?.answerType)}</h2>}
 
       <p>{question?.text}</p>
 

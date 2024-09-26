@@ -7,13 +7,21 @@ const QuizContext = createContext();
 
 let questIds = [];
 
+let initQuizStatus = {
+  quizId: null,
+  inProgress: false,
+  finished: false,
+};
+
 function QuizProvider({ children }) {
   const [quizzes, setQuizzes] = useState([]);
   const [questionAndAnswers, setQuestionAndAnswers] = useState([]);
-  const [shuffle, setShuffle] = useState(true);
+  const [numOfQuestions, setNumOfQuestions] = useState(30);
   const [questionsIds, setQuestionsIds] = useState([]);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [preventAnswer, setPreventAnswer] = useState(true);
+  const [incorrectQuestions, setIncorrectQuestions] = useState([]);
+  const [quizStatus, setQuizStatus] = useState(initQuizStatus);
   const [quizResult, setQuizResult] = useState({
     single: {
       correct: [],
@@ -93,7 +101,15 @@ function QuizProvider({ children }) {
       //   return data;
       // }
 
-      return data.slice(6, 10);
+      const shuffled = shuffleArray(data);
+
+      if (numOfQuestions == "All") {
+        return shuffled;
+      } else {
+        return shuffled.splice(0, numOfQuestions);
+      }
+
+      // return data.slice(0, 2);
     } catch (error) {
       confirm("There was an error loading data. Try again later.");
       navigate("/");
@@ -101,22 +117,39 @@ function QuizProvider({ children }) {
   }
 
   async function startQuiz(_quizId) {
+    resetQuiz();
+    setQuizStatus((prevStatus) => {
+      return {
+        ...prevStatus,
+        inProgress: true,
+        quizId: _quizId,
+      };
+    });
     questIds = await getAllQuestionsIds(_quizId);
     setQuestionsIds(questIds);
+    setQuestionIndex(0);
 
-    navigate(`/quizId/${_quizId}/questionId/${questIds[questionIndex]?.id}`);
+    navigate(`/quizId/${_quizId}/questionId/${questIds[0]?.id}`);
   }
 
   function finishQuiz() {
-    resetQuiz();
-
     navigate("/result");
+
+    setQuizStatus((prevStatus) => {
+      return {
+        ...prevStatus,
+        finished: true,
+        inProgress: false,
+      };
+    });
   }
 
   function resetQuiz() {
     questIds = [];
     setQuestionsIds(questIds);
     setQuestionIndex(0);
+    setQuizStatus(initQuizStatus);
+    setIncorrectQuestions([]);
     setQuizResult({
       single: {
         correct: [],
@@ -177,13 +210,17 @@ function QuizProvider({ children }) {
     questionIndex,
     changeQuestion,
     setQuestionIndex,
-    shuffle,
-    setShuffle,
+    numOfQuestions,
+    setNumOfQuestions,
     quizResult,
     setQuizResult,
     finishQuiz,
+    resetQuiz,
     preventAnswer,
     setPreventAnswer,
+    quizStatus,
+    incorrectQuestions,
+    setIncorrectQuestions,
   };
 
   return (

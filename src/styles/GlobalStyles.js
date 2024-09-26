@@ -25,7 +25,7 @@ a:hover {
 
 body {
   display: flex;
-  min-height: 100vh;
+  min-height: 90vh;
 }
 
 h1 {

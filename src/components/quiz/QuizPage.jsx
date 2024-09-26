@@ -3,14 +3,9 @@ import styled from "styled-components";
 import { useQuiz } from "../../context/QuizContext";
 import { useEffect } from "react";
 
-import FormGroup from "@mui/material/FormGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Switch from "@mui/material/Switch";
-
 export default function QuizPage() {
   const { quizId } = useParams();
-  const { quizzes, startQuiz, shuffle, setShuffle } = useQuiz();
-
+  const { quizzes, startQuiz, setNumOfQuestions } = useQuiz();
   const selectedQuiz = quizzes.find((quiz) => quiz.id == quizId);
 
   useEffect(() => {
@@ -31,22 +26,19 @@ export default function QuizPage() {
 
       <p>{selectedQuiz?.description}</p>
 
-      <StyledFormGroup>
-        <FormControlLabel
-          sx={{
-            color: "white",
-          }}
-          control={
-            <Switch
-              checked={shuffle}
-              onChange={() => {
-                setShuffle(!shuffle);
-              }}
-            />
-          }
-          label="Shuffle questions"
-        />
-      </StyledFormGroup>
+      <label>Num of questions to fetch:</label>
+      <StyledSelect
+        onChange={(event) => {
+          setNumOfQuestions(event.target.value);
+        }}
+      >
+        <option value={30}>30</option>
+        <option value={50}>50</option>
+        <option value={100}>100</option>
+        <option value={150}>150</option>
+        <option value={200}>200</option>
+        <option value="All">All</option>
+      </StyledSelect>
 
       <button
         onClick={() => {
@@ -59,8 +51,23 @@ export default function QuizPage() {
   );
 }
 
+const StyledSelect = styled.select`
+  width: 60px;
+  margin-bottom: 30px;
+  padding: 10px;
+  font: inherit;
+`;
+
 const QuizPageBody = styled.section`
   margin: 100px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  & label {
+    color: white;
+    font-size: 20px;
+  }
 
   & p {
     white-space: pre-line;
@@ -80,16 +87,4 @@ const QuizPageBody = styled.section`
 const QuizTitle = styled.h2`
   font-size: 40px;
   color: #535bf2;
-`;
-
-const StyledFormGroup = styled(FormGroup)`
-  font-style: inherit;
-  color: "white";
-  margin-bottom: 10px;
-`;
-
-const StyledSwitch = styled(Switch)`
-  font-style: inherit;
-  color: "white";
-  margin-bottom: 10px;
 `;

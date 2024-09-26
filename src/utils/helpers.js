@@ -64,3 +64,25 @@ export function getAnswerIfExist(_quizResult, _questionId, _idx) {
 
   return existsIncorrect;
 }
+
+export function getAnswerSingle(_quizResult, _questionId) {
+  let { correct, incorrect } = _quizResult;
+
+  let existsCorrect = correct.find(
+    (answer) => answer.questionId === _questionId
+  );
+
+  if (existsCorrect) return existsCorrect;
+
+  let existsIncorrect = incorrect.find(
+    (answer) => answer.questionId === _questionId
+  );
+
+  return existsIncorrect;
+}
+
+export function percentage(partialValue, totalValue) {
+  let percent = (100 * partialValue) / totalValue;
+
+  return percent.toFixed(2);
+}

@@ -71,12 +71,22 @@ function DropdownMenu({
     quizResult.dropdown,
     allCorrectAnswers[0].questionId,
     index
-  )[0]?.option;
-  const [selectedAnswer, setSelectedAnswer] = useState(existingAnswer);
+  )[0];
+
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
 
   useEffect(() => {
     if (existingAnswer) {
-      setSelectedAnswers((oldState) => [...oldState, existingAnswer]);
+      setSelectedAnswers((oldState) => {
+        let duplicate = oldState?.find((item) => item.id === existingAnswer.id);
+
+        if (duplicate) {
+          return [...oldState];
+        } else {
+          return [...oldState, existingAnswer];
+        }
+      });
+      setSelectedAnswer(existingAnswer?.option);
       setPreventAnswer(false);
     }
 
@@ -167,6 +177,7 @@ const SelectBody = styled.div`
     border-radius: 5px;
     font-size: 16px;
     color: black;
+    width: 200px;
 
     &:hover,
     &:focus {
