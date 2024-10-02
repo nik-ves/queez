@@ -61,6 +61,12 @@ export default function AnswerMultiple({ answers }) {
     };
   }, [answers]);
 
+  useEffect(() => {
+    if (selectedAnswers?.length != correctAnswers?.length) {
+      setPreventAnswer(true);
+    }
+  }, [selectedAnswers]);
+
   return (
     <>
       {shuffledArray?.map((answer, idx) => {
