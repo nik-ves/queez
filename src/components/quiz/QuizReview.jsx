@@ -37,7 +37,7 @@ export default function QuizReview() {
 }
 
 const Body = styled.div`
-  width: 200px;
+  width: 170px;
   height: 100%;
   padding: 10px;
   position: fixed;
@@ -45,6 +45,7 @@ const Body = styled.div`
   left: 0;
   overflow-y: scroll;
   border-right: 3px solid white;
+  background-color: #242424;
 
   -ms-overflow-style: none; /* Internet Explorer 10+ */
   scrollbar-width: none; /* Firefox */

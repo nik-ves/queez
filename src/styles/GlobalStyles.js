@@ -5,7 +5,8 @@ const GlobalStyles = createGlobalStyle`
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  background-color: #242424;
+  background-color: #1d1d1d;
+  // #1d1d1d
 }
 
 #root {

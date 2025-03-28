@@ -26,7 +26,7 @@ export default function QuizPage() {
 
       <p>{selectedQuiz?.description}</p>
 
-      <label>Num of questions to fetch:</label>
+      <label>Number of questions to fetch:</label>
       <StyledSelect
         onChange={(event) => {
           setNumOfQuestions(event.target.value);
@@ -59,10 +59,13 @@ const StyledSelect = styled.select`
 `;
 
 const QuizPageBody = styled.section`
-  margin: 100px 10px;
+  margin: 50px 10px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  background-color: #242424;
+  padding: 15px;
+  border-radius: 5px;
 
   & label {
     color: white;
@@ -87,4 +90,5 @@ const QuizPageBody = styled.section`
 const QuizTitle = styled.h2`
   font-size: 40px;
   color: #535bf2;
+  margin: 0 auto 20px auto;
 `;

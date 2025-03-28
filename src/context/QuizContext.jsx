@@ -109,7 +109,7 @@ function QuizProvider({ children }) {
         return shuffled.splice(0, numOfQuestions);
       }
 
-      // return data.slice(0, 2);
+      //return data.slice(0, 3);
     } catch (error) {
       confirm("There was an error loading data. Try again later.");
       navigate("/");

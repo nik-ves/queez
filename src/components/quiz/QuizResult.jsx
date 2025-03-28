@@ -152,12 +152,13 @@ export default function QuizResult() {
 
 const Body = styled.div`
   margin-top: 50px;
-  background-color: grey;
+  background-color: #242424;
   padding: 20px;
   border-radius: 10px;
 
   & h1 {
     text-align: center;
+    color: #646cff;
   }
 `;
 
