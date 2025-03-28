@@ -31,7 +31,8 @@ export default function QuestionBox({ question }) {
 const QuestionBody = styled.section`
   margin-bottom: 50px;
   padding: 20px;
-  border: 2px solid white;
+  background-color: #242424;
+  border-radius: 5px;
 
   @media only screen and (max-width: 1000px) {
     margin-bottom: 25px;
@@ -39,7 +40,7 @@ const QuestionBody = styled.section`
   }
 
   h2 {
-    color: white;
+    color: #646cff;
     @media only screen and (max-width: 1000px) {
       font-size: 22px;
     }

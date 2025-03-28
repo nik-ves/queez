@@ -68,7 +68,8 @@ export default function QuizStarted() {
                 disabled={
                   firstQuestionId == questionId ||
                   questionsIds.length === 0 ||
-                  preventAnswer
+                  preventAnswer ||
+                  incorrectQuestions?.length > 0
                 }
                 onClick={() => {
                   changeQuestion(quizId, "-");
