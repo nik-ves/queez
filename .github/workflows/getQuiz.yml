@@ -1,0 +1,20 @@
+name: GET Quiz # supabase API shuts down every 14 days if API is not called. this action keeps it alive
+
+on:
+  schedule:
+    - cron: "0 7 * * 1" # every monday at 08:00 CET
+  workflow_dispatch:
+
+jobs:
+  get-request:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Make GET request
+        run: |
+          curl -X GET "https://vwnafpgydigehxprcvpx.supabase.co/rest/v1/quiz" \
+            -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3bmFmcGd5ZGlnZWh4cHJjdnB4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDMxMTAxNzEsImV4cCI6MjA1ODY4NjE3MX0.K3OlSLCOBL3_TZCWzyo42ghgB_mAjGg0GnZn1DJVN0o" \
+            -o response.json
+            
+      - name: Show saved response 
+        run: | 
+          cat response.json
